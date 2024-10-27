@@ -5,25 +5,28 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
-console.log('Hello from Functions!');
+import type { Tx } from '../../types/tx.ts';
+import { registerModules, type MsgRegistry } from '../modules/registry.ts';
+import { supabaseClient } from '../supabase-client.ts';
+import type { Module } from '../types/module.ts';
 
-Deno.serve(async (req) => {
-	const { tx } = await req.json();
-	const data = {
-		message: `Hello ${name}!`
+export function sendTxfactory(modules: Module[]): Deno.ServeHandler {
+	const supabase = supabaseClient();
+
+	const registry: MsgRegistry = {};
+	registerModules(registry, ...modules);
+
+	return async (req) => {
+		const { tx }: { tx: Tx } = await req.json();
+		const msg = tx.body.msg;
+
+		const MsgConstructor = registry[msg.type];
+		if (!MsgConstructor) {
+			throw new Error(`Unknown message type: ${msg.type}`);
+		}
+		const msgInstance = new MsgConstructor(msg.value);
+		const res = await msgInstance.stateTransitionFunction(supabase);
+
+		return new Response(JSON.stringify(res), { headers: { 'Content-Type': 'application/json' } });
 	};
-
-	return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
-});
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/send-tx' \
-    --header 'Authorization: Bearer ' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
+}

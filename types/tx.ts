@@ -9,7 +9,7 @@ export type Tx<SignatureType = DefaultSignatureTypes> = {
 };
 
 export type TxBody = {
-	msgs: MsgUnion[];
+	msg: MsgUnion;
 	memo: string;
 	timeout_timestamp: Date;
 };
