@@ -21,4 +21,5 @@ export class MsgSend implements Msg {
 	}
 }
 
+// deno-lint-ignore ban-types
 export type MsgSendResponse = {};
