@@ -1,13 +1,15 @@
 import type { Module } from '../../types/module.ts';
-import type { MsgConstructor } from '../../types/msg.ts';
-import { MsgSend } from './send.ts';
+import { MsgSend } from './msg-send.ts';
 
 export function newBankModule(): Module {
 	return {
-		name(): string {
+		name() {
 			return 'bank';
 		},
-		msgs(): MsgConstructor[] {
+		inspectors() {
+			return [];
+		},
+		msgs() {
 			return [MsgSend];
 		}
 	};
