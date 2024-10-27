@@ -19,11 +19,11 @@ export async function getBalance(
 	if (res.error) {
 		throw res.error;
 	}
-	console.log(res.data);
+	const amount = res.data.length > 0 ? res.data[0].amount : BigInt(0);
 
 	return {
 		id: assetId,
-		amount: res.data[0].amount
+		amount: amount
 	};
 }
 
