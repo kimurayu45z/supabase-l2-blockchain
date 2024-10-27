@@ -1,10 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { PgTransaction } from 'drizzle-orm/pg-core/session';
+import type { ExtractTablesWithRelations } from 'drizzle-orm';
+import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
 import type { Tx } from '../../../types/tx.ts';
 
 export async function inspectorSequence(
 	supabase: SupabaseClient,
-	dbTx: PgTransaction<any>,
+	dbTx: PgTransaction<
+		PgQueryResultHKT,
+		Record<string, never>,
+		ExtractTablesWithRelations<Record<string, never>>
+	>,
 	tx: Tx
 ) {}

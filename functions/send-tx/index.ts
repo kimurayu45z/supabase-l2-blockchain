@@ -7,6 +7,7 @@ import type { Tx } from '../../types/tx.ts';
 import { registerModules, Registry } from '../modules/registry.ts';
 import { supabaseClient } from '../supabase-client.ts';
 import type { Module } from '../types/module.ts';
+import type { MsgResponse } from '../types/msg.ts';
 
 export function sendTxFactory(supabaseDbUrl: string, modules: Module[]): Deno.ServeHandler {
 	const supabase = supabaseClient();
@@ -22,20 +23,25 @@ export function sendTxFactory(supabaseDbUrl: string, modules: Module[]): Deno.Se
 
 	return async (req) => {
 		const { tx }: { tx: Tx } = await req.json();
-		const res: any[] = [];
+		const res: MsgResponse[] = [];
 
 		await drizzle.transaction(async (dbTx) => {
-			for (const inspector of registry.inspectors) {
-				await inspector(supabase, dbTx, tx);
-			}
-
-			for (const msg of tx.body.msgs) {
-				const MsgConstructor = registry.msgs[msg.type];
-				if (!MsgConstructor) {
-					throw new Error(`Unknown message type: ${msg.type}`);
+			try {
+				for (const inspector of registry.inspectors) {
+					await inspector(supabase, dbTx, tx);
 				}
-				const msgInstance = new MsgConstructor(msg.value);
-				res.push(await msgInstance.stateTransitionFunction(supabase, dbTx));
+
+				for (const msg of tx.body.msgs) {
+					const MsgConstructor = registry.msgs[msg.type];
+					if (!MsgConstructor) {
+						throw new Error(`Unknown message type: ${msg.type}`);
+					}
+					const msgInstance = new MsgConstructor(msg.value);
+					res.push(await msgInstance.stateTransitionFunction(supabase, dbTx));
+				}
+			} catch (e) {
+				dbTx.rollback();
+				throw e;
 			}
 		});
 
