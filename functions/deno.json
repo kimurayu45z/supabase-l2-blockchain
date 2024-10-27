@@ -1,5 +1,13 @@
 {
+  "name": "@supabase-l2-blockchain/functions",
+  "version": "0.1.0",
+  "exports": "./mod.ts",
+  "tasks": {
+    "dev": "deno test --watch mod.ts"
+  },
   "imports": {
-    "@supabase/supabase-js": "jsr:@supabase/supabase-js@^2.45.6"
+    "@supabase/supabase-js": "jsr:@supabase/supabase-js@^2.45.6",
+    "drizzle-orm": "npm:drizzle-orm@^0.35.3",
+    "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"
   }
 }

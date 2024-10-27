@@ -15,7 +15,7 @@ export class Registry {
 export function registerModules(registry: Registry, ...modules: Module[]) {
 	for (const module of modules) {
 		for (const msg of module.msgs()) {
-			registry.msgs[msg.type()] = msg;
+			registry.msgs[`${module.name()}/${msg.name()}`] = msg;
 		}
 
 		registry.inspectors = registry.inspectors.concat(module.inspectors());
