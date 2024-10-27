@@ -1,8 +1,3 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import type { Tx } from '../../types/tx.ts';
@@ -10,7 +5,7 @@ import { registerModules, Registry } from '../modules/registry.ts';
 import { supabaseClient } from '../supabase-client.ts';
 import type { Module } from '../types/module.ts';
 
-export function sendTxfactory(modules: Module[]): Deno.ServeHandler {
+export function sendTxFactory(modules: Module[]): Deno.ServeHandler {
 	const supabase = supabaseClient();
 
 	const registry = new Registry();
