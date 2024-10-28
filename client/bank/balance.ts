@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { Asset } from '../types/asset';
-import { createBalanceMap, type Balance } from '../types/balance';
+import type { Asset } from '../../types/asset';
+import { createBalanceMap, type Balance } from '../../types/balance';
 
 const TABLE_BALANCES = 'balances';
 

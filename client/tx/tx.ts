@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { Tx } from '../types/tx';
+import type { Tx } from '../../types/tx';
 
 const TABLE_TXS = 'txs';
 const TABLE_TX_INCLUSIONS = 'tx-inclusions';
