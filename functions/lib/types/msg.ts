@@ -7,6 +7,9 @@ import type { AnyPossibleConstructor } from '../../../types/any.ts';
 export interface MsgResponse {}
 
 export interface Msg<Schema extends Record<string, unknown>> {
+	constructor: MsgConstructor<Schema>;
+	value: unknown;
+
 	signers(): string[];
 
 	stateTransitionFunction(

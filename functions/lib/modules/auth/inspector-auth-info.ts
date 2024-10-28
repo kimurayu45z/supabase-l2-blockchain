@@ -2,12 +2,13 @@ import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
 import type { Tx } from '../../../../types/tx.ts';
+import type { Chain } from '../../chain.ts';
 import type { Msg } from '../../types/msg.ts';
-import { ModuleRegistry } from '../module-registry.ts';
 import type { AuthSchema } from './schema.ts';
 
 // deno-lint-ignore require-await
 export async function inspectorAuthInfo<Schema extends AuthSchema>(
+	chain: Chain<Schema>,
 	_: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
 	tx: Tx
 ) {
@@ -22,9 +23,7 @@ export async function inspectorAuthInfo<Schema extends AuthSchema>(
 	const signerMap: { [address: string]: boolean } = {};
 
 	for (const msgAny of tx.body.msgs) {
-		const registry: ModuleRegistry<Schema> = new ModuleRegistry();
-
-		const msg = registry.extractAny<Msg<Schema>>(msgAny);
+		const msg = chain.moduleRegistry.extractAny<Msg<Schema>>(msgAny);
 		for (const signer of msg.signers()) {
 			signerMap[signer] = false;
 		}
