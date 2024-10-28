@@ -1,25 +1,27 @@
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
-import type { SupabaseClient } from 'jsr:@supabase/supabase-js';
 
 import type { Asset } from '../../../types/asset.ts';
 import type { Msg } from '../../types/msg.ts';
+import type { BankSchema } from './schema.ts';
+import { send } from './send.ts';
 
-export class MsgSend implements Msg {
+export class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 	constructor(public value: { from_address: string; to_address: string; assets: Asset[] }) {}
 
 	static name(): string {
 		return 'send';
 	}
 
+	signers(): string[] {
+		return [this.value.from_address];
+	}
+
 	async stateTransitionFunction(
-		supabase: SupabaseClient,
-		dbTx: PgTransaction<
-			PgQueryResultHKT,
-			Record<string, never>,
-			ExtractTablesWithRelations<Record<string, never>>
-		>
+		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>
 	): Promise<MsgSendResponse> {
+		await send(this.value.from_address, this.value.to_address, this.value.assets, dbTx as any);
+
 		return {};
 	}
 }

@@ -1,2 +1,2 @@
-export * from './module.ts';
+export * from './bank.ts';
 export * from './msg-send.ts';

@@ -7,7 +7,7 @@
   },
   "imports": {
     "@supabase/supabase-js": "jsr:@supabase/supabase-js@^2.45.6",
-    "drizzle-orm": "npm:drizzle-orm@^0.35.3",
+    "drizzle-orm": "npm:drizzle-orm@^0.34.1",
     "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"
   }
 }

@@ -1,23 +1,19 @@
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
-import type { SupabaseClient } from 'jsr:@supabase/supabase-js';
 
 // deno-lint-ignore no-empty-interface
 export interface MsgResponse {}
 
-export interface Msg {
+export interface Msg<Schema extends Record<string, unknown>> {
+	signers(): string[];
+
 	stateTransitionFunction(
-		supabase: SupabaseClient,
-		dbTx: PgTransaction<
-			PgQueryResultHKT,
-			Record<string, never>,
-			ExtractTablesWithRelations<Record<string, never>>
-		>
+		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>
 	): Promise<MsgResponse>;
 }
 
-export type MsgConstructor = {
+export type MsgConstructor<Schema extends Record<string, unknown>> = {
 	name(): string;
 	// deno-lint-ignore no-explicit-any
-	new (value: any): Msg;
+	new (value: any): Msg<Schema>;
 };
