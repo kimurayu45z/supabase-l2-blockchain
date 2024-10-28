@@ -34,7 +34,7 @@ export class AuthModule<Schema extends AuthSchema> implements Module<Schema> {
 		chain: Chain<Schema>,
 		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
 		tx: Tx
-	) {
+	): Promise<void> {
 		await inspectorAuthInfo(chain, dbTx, tx);
 		await inspectorSequence(chain, dbTx, tx, this.addressConverter);
 		await inspectorSignature(chain, dbTx, tx, this.addressConverter, this.supportedPublicKeyTypes);

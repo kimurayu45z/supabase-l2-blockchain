@@ -2,9 +2,9 @@ import { Buffer } from 'node:buffer';
 
 import * as ed from '@noble/ed25519';
 
-import type { AnyPossible } from '../../../types/any.ts';
+import type { PublicKey } from './public-key.ts';
 
-export class PublicKeyEd25519 implements AnyPossible {
+export class PublicKeyEd25519 implements PublicKey {
 	['constructor'] = PublicKeyEd25519;
 	private _value: Buffer;
 
@@ -14,6 +14,10 @@ export class PublicKeyEd25519 implements AnyPossible {
 
 	constructor(public value: string) {
 		this._value = Buffer.from(value, 'hex');
+	}
+
+	bytes() {
+		return this._value;
 	}
 
 	verify(msg: Uint8Array, sig: Uint8Array) {
