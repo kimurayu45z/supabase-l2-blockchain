@@ -1,4 +1,4 @@
-import type { AnyPossibleConstructor } from '../../../types/any.ts';
+import type { AnyPossibleConstructor } from '../../types/any.ts';
 import type { Inspector } from './inspector.ts';
 import type { MsgConstructor } from './msg.ts';
 

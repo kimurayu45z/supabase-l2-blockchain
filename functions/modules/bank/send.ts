@@ -1,7 +1,7 @@
 import { and, eq, type ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import type { Asset } from '../../../../types/asset.ts';
+import type { Asset } from '../../../types/asset.ts';
 import { balances, type BankSchema } from './schema.ts';
 
 export async function send(

@@ -1,11 +1,11 @@
 import { Buffer } from 'node:buffer';
 
-import * as ed from '@noble/ed25519';
+import * as secp from '@noble/secp256k1';
 
-import type { AnyPossible } from '../../../../types/any.ts';
+import type { AnyPossible } from '../../../types/any.ts';
 
-export class PublicKeyEd25519 implements AnyPossible {
-	['constructor'] = PublicKeyEd25519;
+export class PublicKeySecp256k1 implements AnyPossible {
+	['constructor'] = PublicKeySecp256k1;
 	private _value: Buffer;
 
 	static type() {
@@ -17,6 +17,6 @@ export class PublicKeyEd25519 implements AnyPossible {
 	}
 
 	verify(msg: Uint8Array, sig: Uint8Array) {
-		return ed.verify(sig, msg, this._value);
+		return secp.verify(sig, msg, this._value);
 	}
 }

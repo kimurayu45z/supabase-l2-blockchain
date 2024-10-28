@@ -1,7 +1,7 @@
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import type { Tx } from '../../../../types/tx.ts';
+import type { Tx } from '../../../types/tx.ts';
 import type { Chain } from '../../chain.ts';
 import type { Msg } from '../../types/msg.ts';
 import type { AuthSchema } from './schema.ts';

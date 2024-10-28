@@ -4,7 +4,7 @@ import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 import { zip } from 'https://deno.land/std@0.102.0/collections/zip.ts';
 
-import { getSignBytes, type Tx } from '../../../../types/tx.ts';
+import { getSignBytes, type Tx } from '../../../types/tx.ts';
 import type { Chain } from '../../chain.ts';
 import type { PublicKey } from '../../types/crypto/public-key.ts';
 import { ModuleRegistry } from '../module-registry.ts';

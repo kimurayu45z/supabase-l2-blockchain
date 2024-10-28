@@ -1,9 +1,9 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import type { Tx } from '../../types/tx.ts';
-import type { Chain } from '../lib/chain.ts';
-import { postgresDatabase } from '../lib/postgres.ts';
-import type { MsgResponse } from '../lib/types/msg.ts';
+import type { Chain } from '../chain.ts';
+import { postgresDatabase } from '../postgres.ts';
+import type { MsgResponse } from '../types/msg.ts';
 
 export function sendTxFactory<Schema extends Record<string, unknown>>(
 	chain: Chain<Schema>
