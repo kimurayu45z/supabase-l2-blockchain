@@ -16,8 +16,8 @@ export function sendTxFactory<Schema extends Record<string, unknown>>(
 
 		await drizzle.transaction(async (dbTx) => {
 			try {
-				for (const inspector of chain.moduleRegistry.inspectors) {
-					await inspector(chain, dbTx, tx);
+				for (const module of chain.moduleRegistry.modules) {
+					await module.inspector(chain, dbTx, tx);
 				}
 
 				for (const msg of tx.body.msgs) {

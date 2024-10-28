@@ -1,19 +1,17 @@
 import type { Any, AnyPossible, AnyPossibleConstructor } from '../../types/any.ts';
-import type { Inspector } from '../types/inspector.ts';
 import type { Module } from '../types/module.ts';
 import type { MsgConstructor } from '../types/msg.ts';
 
 export class ModuleRegistry<Schema extends Record<string, unknown>> {
-	public inspectors: Inspector<Schema>[];
+	public modules: Module<Schema>[];
 	public msgs: { [type: string]: MsgConstructor<Schema> };
 	public types: { [type: string]: AnyPossibleConstructor };
 
 	constructor(...modules: Module<Schema>[]) {
-		this.inspectors = [];
+		this.modules = modules;
 		this.msgs = {};
 		this.types = {};
 		for (const module of modules) {
-			this.inspectors = this.inspectors.concat(module.inspectors());
 			for (const msg of module.msgs()) {
 				this.msgs[msg.type()] = msg;
 			}

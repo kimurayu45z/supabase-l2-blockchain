@@ -3,15 +3,19 @@ import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/sessio
 
 import type { Tx } from '../../../types/tx.ts';
 import type { Chain } from '../../chain.ts';
+import type { PublicKey } from '../../types/crypto/public-key.ts';
+import type { AddressConverter } from './address-converter.ts';
 import { accounts, type AuthSchema } from './schema.ts';
 
 export async function inspectorSequence<Schema extends AuthSchema>(
-	_chain: Chain<Schema>,
+	chain: Chain<Schema>,
 	dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
-	tx: Tx
+	tx: Tx,
+	addressConverter: AddressConverter
 ) {
 	for (const signerInfo of tx.auth_info.signer_infos) {
-		const address = signerInfo.public_key.value as string;
+		const pubKey = chain.moduleRegistry.extractAny<PublicKey>(signerInfo.public_key);
+		const address = addressConverter(pubKey);
 
 		const sequence = await dbTx
 			.select()
