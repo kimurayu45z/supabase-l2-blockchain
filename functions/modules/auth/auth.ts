@@ -6,6 +6,7 @@ import type { Tx } from '../../../types/tx.ts';
 import type { Chain } from '../../chain.ts';
 import type { PublicKey } from '../../types/crypto/public-key.ts';
 import type { Module } from '../../types/module.ts';
+import type { MsgConstructor } from '../../types/msg.ts';
 import type { AddressConverter } from './address-converter.ts';
 import { inspectorAuthInfo } from './inspector-auth-info.ts';
 import { inspectorSequence } from './inspector-sequence.ts';
@@ -18,15 +19,15 @@ export class AuthModule<Schema extends AuthSchema> implements Module<Schema> {
 		public supportedPublicKeyTypes: AnyPossibleConstructor<PublicKey>[]
 	) {}
 
-	name() {
+	name(): string {
 		return 'auth';
 	}
 
-	msgs() {
+	msgs(): MsgConstructor<Schema>[] {
 		return [];
 	}
 
-	types() {
+	types(): AnyPossibleConstructor[] {
 		return [];
 	}
 
