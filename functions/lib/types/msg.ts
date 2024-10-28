@@ -1,6 +1,8 @@
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
+import type { AnyPossibleConstructor } from '../../../types/any.ts';
+
 // deno-lint-ignore no-empty-interface
 export interface MsgResponse {}
 
@@ -12,8 +14,6 @@ export interface Msg<Schema extends Record<string, unknown>> {
 	): Promise<MsgResponse>;
 }
 
-export type MsgConstructor<Schema extends Record<string, unknown>> = {
-	name(): string;
-	// deno-lint-ignore no-explicit-any
-	new (value: any): Msg<Schema>;
-};
+export type MsgConstructor<Schema extends Record<string, unknown>> = AnyPossibleConstructor<
+	Msg<Schema>
+>;

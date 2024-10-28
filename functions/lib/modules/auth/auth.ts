@@ -13,6 +13,9 @@ export function newAuthModule<Schema extends AuthSchema>(): Module<Schema> {
 		},
 		msgs() {
 			return [];
+		},
+		types() {
+			return []
 		}
 	};
 }

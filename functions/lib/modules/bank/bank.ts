@@ -12,6 +12,9 @@ export function newBankModule<Schema extends BankSchema>(): Module<Schema> {
 		},
 		msgs() {
 			return [MsgSend];
+		},
+		types() {
+			return [];
 		}
 	};
 }

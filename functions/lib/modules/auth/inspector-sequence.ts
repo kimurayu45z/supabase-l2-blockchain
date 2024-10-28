@@ -8,16 +8,8 @@ export async function inspectorSequence<Schema extends AuthSchema>(
 	dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
 	tx: Tx
 ) {
-	const usedAddress: { [address: string]: true } = {};
 	for (const signerInfo of tx.auth_info.signer_infos) {
 		const address = signerInfo.public_key.value as string;
-
-		if (usedAddress[address]) {
-			throw Error(`Duplicated address: ${address}`);
-		}
-		usedAddress[address] = true;
-
-		dbTx.query;
 
 		const sequence = await dbTx
 			.select()

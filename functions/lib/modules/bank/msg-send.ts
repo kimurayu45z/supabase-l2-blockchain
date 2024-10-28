@@ -9,8 +9,8 @@ import { send } from './send.ts';
 export class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 	constructor(public value: { from_address: string; to_address: string; assets: Asset[] }) {}
 
-	static name(): string {
-		return 'send';
+	static type(): string {
+		return 'bank/MsgSend';
 	}
 
 	signers(): string[] {
