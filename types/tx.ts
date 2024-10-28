@@ -1,26 +1,35 @@
+import type { Any } from './any';
 import { canonicalizeObjectForSerialization } from './json';
-import type { MsgUnion } from './msg';
-import type { DefaultSignatureTypes, Signature } from './signature';
 
-export type Tx<SignatureType = DefaultSignatureTypes> = {
+export type Tx = {
 	hash: string;
 	body: TxBody;
-	signatures: Signature<SignatureType>[];
+	auth_info: AuthInfo;
+	signatures: string[];
 };
 
 export type TxBody = {
-	msgs: MsgUnion[];
+	msgs: Any[];
 	memo: string;
 	timeout_timestamp: Date;
+};
+
+export type AuthInfo = {
+	signer_infos: SignerInfo[];
+};
+
+export type SignerInfo = {
+	public_key: Any;
+	sequence: number;
 };
 
 export type TxSignDoc = {
 	body: TxBody;
 	chain_id: string;
-	sequence: bigint;
+	sequence: number;
 };
 
-export function getSignBytes(txBody: TxBody, chainId: string, sequence: bigint): Buffer {
+export function getSignBytes(txBody: TxBody, chainId: string, sequence: number): Buffer {
 	const signDoc: TxSignDoc = {
 		body: txBody,
 		chain_id: chainId,

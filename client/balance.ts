@@ -15,11 +15,9 @@ export async function getBalance(
 		.select('*')
 		.eq('address', address)
 		.eq('asset_id', assetId)
-		.returns<Balance[]>();
-	if (res.error) {
-		throw res.error;
-	}
-	const amount = res.data.length > 0 ? res.data[0].amount : BigInt(0);
+		.single<Balance>();
+
+	const amount = !res.error ? res.data.amount : BigInt(0);
 
 	return {
 		id: assetId,

@@ -6,12 +6,12 @@ const TABLE_TXS = 'txs';
 const TABLE_TX_INCLUSIONS = 'tx-inclusions';
 
 export async function getTx(supabase: SupabaseClient, hash: string): Promise<Tx> {
-	const res = await supabase.from(TABLE_TXS).select('*').eq('hash', hash).returns<Tx[]>();
+	const res = await supabase.from(TABLE_TXS).select('*').eq('hash', hash).single<Tx>();
 	if (res.error) {
 		throw res.error;
 	}
 
-	return res.data[0];
+	return res.data;
 }
 
 export async function getTxs(
