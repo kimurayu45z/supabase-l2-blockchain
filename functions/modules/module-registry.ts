@@ -13,11 +13,11 @@ export class ModuleRegistry<Schema extends Record<string, unknown>> {
 		this.types = {};
 		for (const module of modules) {
 			for (const msg of module.msgs()) {
-				this.msgs[msg.type()] = msg;
+				this.msgs[`${module.name()}/${msg.type()}`] = msg;
 			}
 
 			for (const t of module.types()) {
-				this.types[t.type()] = t;
+				this.types[`${module.name()}/${t.type()}`] = t;
 			}
 		}
 	}
