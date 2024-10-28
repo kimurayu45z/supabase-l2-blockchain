@@ -1,6 +1,5 @@
-import { canonicalizeObjectForSerialization } from './json';
-import type { Signature } from './signature';
-import type { Tx } from './tx';
+import { canonicalizeObjectForSerialization } from './json.ts';
+import type { Tx } from './tx.ts';
 
 export type BlockHeader = {
 	chain_id: string;
@@ -9,7 +8,7 @@ export type BlockHeader = {
 	last_signatures_hash: string;
 	txs_hash: string;
 	next_signers_hash: string;
-	signatures: Signature[];
+	signatures: string[];
 };
 
 export type BlockBody = {
@@ -23,7 +22,7 @@ export type Block = {
 
 export function getSignBytes(block: Block): Buffer {
 	const canonical = canonicalizeObjectForSerialization(block);
-    const json = JSON.stringify(canonical)
+	const json = JSON.stringify(canonical);
 
-    return Buffer.from(json);
+	return Buffer.from(json);
 }

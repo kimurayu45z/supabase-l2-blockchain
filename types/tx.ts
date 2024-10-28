@@ -1,5 +1,5 @@
-import type { Any } from './any';
-import { canonicalizeObjectForSerialization } from './json';
+import type { Any } from './any.ts';
+import { canonicalizeObjectForSerialization } from './json.ts';
 
 export type Tx = {
 	hash: string;
