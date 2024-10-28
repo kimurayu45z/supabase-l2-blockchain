@@ -1,7 +1,7 @@
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import { getSignBytes, type Tx } from '../../../types/tx.ts';
+import { getSignBytes, type Tx } from '../../../../types/tx.ts';
 import type { AuthSchema } from './schema.ts';
 
 export async function inspectorSignature<Schema extends AuthSchema>(
