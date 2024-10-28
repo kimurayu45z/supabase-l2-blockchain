@@ -1,9 +1,9 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import type { Tx } from '../../types/tx.ts';
-import { postgresDatabase } from '../drizzle.ts';
-import type { ModuleRegistry } from '../modules/module-registry.ts';
-import type { MsgResponse } from '../types/msg.ts';
+import { postgresDatabase } from '../lib/drizzle.ts';
+import type { ModuleRegistry } from '../lib/modules/module-registry.ts';
+import type { MsgResponse } from '../lib/types/msg.ts';
 
 export function sendTxFactory<Schema extends Record<string, unknown>>(
 	db: { url: string; schema: Schema },
