@@ -1,23 +1,20 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
-import type { Tx } from '../../types/tx.ts';
-import type { Chain } from '../chain.ts';
-import { postgresDatabase } from '../postgres.ts';
-import type { MsgResponse } from '../types/msg.ts';
+import type { SendTxRequestBody } from '../../../types/send-tx.ts';
+import type { Chain } from '../../chain.ts';
+import type { MsgResponse } from '../../types/msg.ts';
 
 export function sendTxFactory<Schema extends Record<string, unknown>>(
 	chain: Chain<Schema>
 ): Deno.ServeHandler {
-	const drizzle = postgresDatabase(chain.db.url, chain.db.schema);
-
 	return async (req) => {
-		const { tx }: { tx: Tx } = await req.json();
+		const { tx }: SendTxRequestBody = await req.json();
 		const res: MsgResponse[] = [];
 
-		await drizzle.transaction(async (dbTx) => {
+		await chain.db.transaction(async (dbTx) => {
 			try {
-				for (const module of chain.moduleRegistry.modules) {
-					await module.inspector(chain, dbTx, tx);
+				for (const moduleName in chain.moduleRegistry.modules) {
+					await chain.moduleRegistry.modules[moduleName].inspector(chain, dbTx, tx);
 				}
 
 				for (const msg of tx.body.msgs) {

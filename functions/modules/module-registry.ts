@@ -3,21 +3,23 @@ import type { Module } from '../types/module.ts';
 import type { MsgConstructor } from '../types/msg.ts';
 
 export class ModuleRegistry<Schema extends Record<string, unknown>> {
-	public modules: Module<Schema>[];
+	public modules: { [name: string]: Module<Schema> };
 	public msgs: { [type: string]: MsgConstructor<Schema> };
 	public types: { [type: string]: AnyPossibleConstructor };
 
 	constructor(...modules: Module<Schema>[]) {
-		this.modules = modules;
+		this.modules = {};
 		this.msgs = {};
 		this.types = {};
 		for (const module of modules) {
+			this.modules[module.constructor.name()] = module;
+
 			for (const msg of module.msgs()) {
-				this.msgs[`${module.name()}/${msg.type()}`] = msg;
+				this.msgs[`${module.constructor.name()}/${msg.type()}`] = msg;
 			}
 
-			for (const t of module.types()) {
-				this.types[`${module.name()}/${t.type()}`] = t;
+			for (const t of module.constructor.types()) {
+				this.types[`${module.constructor.name()}/${t.type()}`] = t;
 			}
 		}
 	}

@@ -10,16 +10,18 @@ import { MsgSend } from './msg-send.ts';
 import type { BankSchema } from './schema.ts';
 
 export class BankModule<Schema extends BankSchema> implements Module<Schema> {
-	name(): string {
+	['constructor'] = BankModule<Schema>;
+
+	static name(): string {
 		return 'bank';
+	}
+
+	static types(): AnyPossibleConstructor[] {
+		return [];
 	}
 
 	msgs(): MsgConstructor<Schema>[] {
 		return [MsgSend];
-	}
-
-	types(): AnyPossibleConstructor[] {
-		return [];
 	}
 
 	async inspector(

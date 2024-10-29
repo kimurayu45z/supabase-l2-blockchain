@@ -8,16 +8,18 @@ import { PublicKeySecp256k1 } from '../../types/crypto/secp256k1.ts';
 import type { Module } from '../../types/module.ts';
 
 export class CryptoModule<Schema extends Record<string, unknown>> implements Module<Schema> {
-	name() {
+	['constructor'] = CryptoModule<Schema>;
+
+	static name() {
 		return 'crypto';
+	}
+
+	static types() {
+		return [PublicKeyEd25519, PublicKeySecp256k1];
 	}
 
 	msgs() {
 		return [];
-	}
-
-	types() {
-		return [PublicKeyEd25519, PublicKeySecp256k1];
 	}
 
 	async inspector(

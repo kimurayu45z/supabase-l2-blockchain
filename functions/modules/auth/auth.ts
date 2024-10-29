@@ -14,20 +14,22 @@ import { inspectorSignature } from './inspector-signature.ts';
 import type { AuthSchema } from './schema.ts';
 
 export class AuthModule<Schema extends AuthSchema> implements Module<Schema> {
+	['constructor'] = AuthModule<Schema>;
+
 	constructor(
 		public addressConverter: AddressConverter,
 		public supportedPublicKeyTypes: AnyPossibleConstructor<PublicKey>[]
 	) {}
 
-	name(): string {
+	static name(): string {
 		return 'auth';
 	}
 
-	msgs(): MsgConstructor<Schema>[] {
+	static types(): AnyPossibleConstructor[] {
 		return [];
 	}
 
-	types(): AnyPossibleConstructor[] {
+	msgs(): MsgConstructor<Schema>[] {
 		return [];
 	}
 
