@@ -16,29 +16,31 @@ export async function getTx(supabase: SupabaseClient, hash: string): Promise<Tx>
 
 export async function getTxs(
 	supabase: SupabaseClient,
-	includedIn: { chainId: string; height: bigint } | null
+	chainId: string,
+	height: bigint
 ): Promise<Tx[]> {
-	if (!includedIn) {
-		const res = await supabase
-			.from(TABLE_TX_INCLUSIONS)
-			.select('*')
-			.eq('chain_id', null)
-			.eq('height', null)
-			.returns<Tx[]>();
-		if (res.error) {
-			throw res.error;
-		}
-		return res.data;
-	}
-
 	const res = await supabase
 		.from(TABLE_TX_INCLUSIONS)
 		.select('*')
-		.eq('chain_id', includedIn.chainId)
-		.eq('height', includedIn.height)
+		.eq('chain_id', chainId)
+		.eq('height', height)
 		.returns<Tx[]>();
 	if (res.error) {
 		throw res.error;
 	}
+	return res.data;
+}
+
+export async function getPendingTxs(supabase: SupabaseClient): Promise<Tx[]> {
+	const res = await supabase
+		.from(TABLE_TX_INCLUSIONS)
+		.select('*')
+		.eq('chain_id', null)
+		.eq('height', null)
+		.returns<Tx[]>();
+	if (res.error) {
+		throw res.error;
+	}
+
 	return res.data;
 }
