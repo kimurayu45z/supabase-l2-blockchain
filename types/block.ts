@@ -4,7 +4,7 @@ import type { Tx } from './tx.ts';
 
 export type BlockHeader = {
 	chain_id: string;
-	height: bigint;
+	height: number;
 	time: Date;
 	last_block_hash: string;
 	txs_merkle_root: string;
