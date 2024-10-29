@@ -1,8 +1,8 @@
-import { integer, jsonb, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { integer, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const block_headers = pgTable('block_headers', {
 	chain_id: text('chain_id').primaryKey(),
-	height: serial('height').primaryKey(),
+	height: integer('height').primaryKey(),
 	time: timestamp('time').notNull(),
 	last_block_hash: text('last_block_hash').notNull(),
 	txs_merkle_root: text('txs_merkle_root').notNull()

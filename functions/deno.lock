@@ -15,7 +15,6 @@
     "npm:@supabase/storage-js@2.7.1": "2.7.1",
     "npm:drizzle-orm@~0.34.1": "0.34.1",
     "npm:hash.js@1.1.7": "1.1.7",
-    "npm:merkletreejs@*": "0.4.0",
     "npm:merkletreejs@0.4": "0.4.0",
     "npm:openai@^4.52.5": "4.68.4"
   },
@@ -687,7 +686,6 @@
       "jsr:@noble/secp256k1@^2.1.0",
       "jsr:@supabase/supabase-js@^2.45.6",
       "npm:drizzle-orm@~0.34.1",
-      "npm:merkletreejs@*",
       "npm:merkletreejs@0.4"
     ]
   }
