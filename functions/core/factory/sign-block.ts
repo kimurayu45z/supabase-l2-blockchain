@@ -3,9 +3,11 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
+import * as ed from '@noble/ed25519';
 import { MerkleTree } from 'merkletreejs';
 
-import type { BlockHeader } from '../../../types/block.ts';
+import type { Any } from '../../../types/any.ts';
+import type { BlockBody, BlockHeader } from '../../../types/block.ts';
 import { canonicalizeObjectForSerialization } from '../../../types/json.ts';
 import type { Tx } from '../../../types/tx.ts';
 import type { Chain } from '../../chain.ts';
@@ -26,25 +28,41 @@ export function signBlockFactory(
 		}
 
 		const lastBlockBody = await chain.db.query.block_bodies.findFirst({
-			where: (blockBody, { eq }) => eq(blockBody.body_hash, lastBlock.body_hash)
+			where: (blockBody, { eq }) => eq(blockBody.block_hash, lastBlock.hash)
 		});
-
 		if (!lastBlockBody) {
 			throw Error();
 		}
 
-		const blockHeader = createBlockHeader(
-			chain.id,
-			lastBlock.height,
-			lastBlock.hash,
-			lastBlockBody.txs as Tx[]
-		);
+		const pendingTxs = await chain.db.query.txs
+			.findMany({
+				where: (tx, { isNull }) => isNull(tx.height)
+			})
+			.then((txs) =>
+				txs.map(
+					(tx) => ({ body: tx.body, auth_info: tx.auth_info, signatures: tx.signatures }) as Tx
+				)
+			);
+		if (!pendingTxs) {
+			throw Error();
+		}
 
+		const blockHeader = createBlockHeader(chain.id, lastBlock.height, lastBlock.hash, pendingTxs);
 		const signBytes = getSignBytes(blockHeader);
 
-		const signatures = [] as string[];
+		// TODO
+		const privateKeys = [Buffer.from('')] as Buffer[];
+		const signatures = privateKeys.map((privateKey) =>
+			Buffer.from(ed.sign(signBytes, privateKey)).toString('hex')
+		);
 
-		const block = await produceBlock(chain, blockHeader, signatures);
+		const blockBody: BlockBody = {
+			txs: pendingTxs,
+			next_signers: lastBlockBody.next_signers as Any[],
+			signatures: signatures
+		};
+
+		const block = await produceBlock(chain, blockHeader, blockBody);
 		const res = canonicalizeObjectForSerialization(block);
 
 		const blockBytes = Buffer.from(JSON.stringify(res));

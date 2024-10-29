@@ -46,7 +46,7 @@ export async function getBlock(
 		)
 		.eq('chain_id', chainId)
 		.eq(`${TABLE_BLOCK_HEADERS}.chain_id`, chainId)
-		.eq(`${TABLE_BLOCK_BODIES}.body_hash`, `${TABLE_BLOCKS}.body_hash`);
+		.eq(`${TABLE_BLOCK_BODIES}.block_hash`, `${TABLE_BLOCKS}.hash`);
 
 	const res = await (() => {
 		if (!height) {

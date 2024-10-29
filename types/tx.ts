@@ -2,7 +2,6 @@ import type { Any } from './any.ts';
 import { canonicalizeObjectForSerialization } from './json.ts';
 
 export type Tx = {
-	hash: string;
 	body: TxBody;
 	auth_info: AuthInfo;
 	signatures: string[];

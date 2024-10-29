@@ -9,7 +9,7 @@ export const block_headers = pgTable('block_headers', {
 });
 
 export const block_bodies = pgTable('block_bodies', {
-	body_hash: text('body_hash').primaryKey(),
+	block_hash: text('block_hash').primaryKey(),
 	txs: jsonb('txs').array().notNull(),
 	next_signers: jsonb('next_signers').array().notNull(),
 	signatures: text('signatures').array().notNull()
@@ -22,6 +22,5 @@ export const blocks = pgTable('blocks', {
 		.references(() => block_headers.chain_id),
 	height: integer('height')
 		.notNull()
-		.references(() => block_headers.height),
-	body_hash: text('body_hash').notNull()
+		.references(() => block_headers.height)
 });
