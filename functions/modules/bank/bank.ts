@@ -9,7 +9,7 @@ import { MsgSend } from './msg-send.ts';
 import type { BankSchema } from './schema.ts';
 
 export class BankModule<Schema extends BankSchema> implements Module<Schema> {
-	['constructor'] = BankModule<Schema>;
+	['constructor']: typeof BankModule<Schema> = BankModule<Schema>;
 
 	static name(): string {
 		return 'bank';

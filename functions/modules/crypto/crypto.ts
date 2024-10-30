@@ -9,7 +9,7 @@ import type { Module } from '../../types/module.ts';
 import type { MsgConstructor } from '../../types/msg.ts';
 
 export class CryptoModule<Schema extends Record<string, unknown>> implements Module<Schema> {
-	['constructor'] = CryptoModule<Schema>;
+	['constructor']: typeof CryptoModule<Schema> = CryptoModule<Schema>;
 
 	static name(): string {
 		return 'crypto';

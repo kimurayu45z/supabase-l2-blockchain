@@ -8,7 +8,7 @@ export class PublicKeyEd25519 implements PublicKey {
 	['constructor'] = PublicKeyEd25519;
 	private _value: Buffer;
 
-	static type() {
+	static type(): string {
 		return 'PublicKeyEd25519';
 	}
 
@@ -16,11 +16,11 @@ export class PublicKeyEd25519 implements PublicKey {
 		this._value = Buffer.from(value, 'hex');
 	}
 
-	bytes() {
+	bytes(): Buffer {
 		return this._value;
 	}
 
-	verify(msg: Uint8Array, sig: Uint8Array) {
+	verify(msg: Uint8Array, sig: Uint8Array): boolean {
 		return ed.verify(sig, msg, this._value);
 	}
 }

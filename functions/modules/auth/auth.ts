@@ -13,7 +13,7 @@ import { inspectorSignature } from './inspector-signature.ts';
 import type { AuthSchema } from './schema.ts';
 
 export class AuthModule<Schema extends AuthSchema> implements Module<Schema> {
-	['constructor'] = AuthModule<Schema>;
+	['constructor']: typeof AuthModule<Schema> = AuthModule<Schema>;
 
 	constructor(
 		public addressConverter: AddressConverter,

@@ -7,7 +7,7 @@ import type { BankSchema } from './schema.ts';
 import { send } from './send.ts';
 
 export class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
-	['constructor'] = MsgSend<Schema>;
+	['constructor']: typeof MsgSend<Schema> = MsgSend<Schema>;
 
 	constructor(public value: { from_address: string; to_address: string; assets: Asset[] }) {}
 
