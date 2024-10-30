@@ -1,13 +1,13 @@
 import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
+import { zip } from '@std/collections';
 import type {
 	Any,
 	Block,
 	BlockBody,
 	BlockHeader
 } from '@supabase-l2-blockchain/types/core/index.d.ts';
-import { zip } from 'https://deno.land/std@0.102.0/collections/zip.ts';
 
 import type { Chain } from '../chain.ts';
 import { getSignBytes } from '../types/block.ts';

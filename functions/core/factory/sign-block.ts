@@ -1,4 +1,4 @@
-import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import '@supabase/functions-js/edge-runtime.d.ts';
 
 import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';

@@ -1,4 +1,4 @@
-import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import '@supabase/functions-js/edge-runtime.d.ts';
 
 import type { SendTxRequestBody } from '@supabase-l2-blockchain/types/core/index.d.ts';
 
