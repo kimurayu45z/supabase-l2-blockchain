@@ -1,4 +1,4 @@
-import type { Tx } from '@supabase-l2-blockchain/types/core';
+import type { Tx, TxBody, TxSignDoc } from '@supabase-l2-blockchain/types/core';
 import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
 
 const TABLE_TXS = 'txs';
@@ -48,4 +48,38 @@ export async function getPendingTxs(supabase: SupabaseClient): Promise<PendingTx
 	}
 
 	return res.data;
+}
+
+function canonicalizeObjectForSerialization(value: object): unknown {
+	if (Object.prototype.toString.call(value) === '[object Object]') {
+		const sorted = {} as Record<string, unknown>;
+		const keys = Object.keys(value).sort();
+
+		for (const key of keys) {
+			const keyValue = (value as Record<string, unknown>)[key];
+			if (keyValue != null) {
+				sorted[key] = canonicalizeObjectForSerialization(keyValue);
+			}
+		}
+
+		return sorted;
+	}
+
+	if (Array.isArray(value)) {
+		return value.map((element) => canonicalizeObjectForSerialization(element));
+	}
+
+	return value === undefined ? null : value;
+}
+
+export function getSignBytes(txBody: TxBody, chainId: string, sequence: number): Buffer {
+	const signDoc: TxSignDoc = {
+		body: txBody,
+		chain_id: chainId,
+		sequence: sequence
+	};
+	const canonical = canonicalizeObjectForSerialization(signDoc);
+	const json = JSON.stringify(canonical);
+
+	return Buffer.from(json);
 }
