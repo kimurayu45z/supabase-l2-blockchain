@@ -10,9 +10,7 @@
     "@noble/ed25519": "jsr:@noble/ed25519@^2.1.0",
     "@noble/secp256k1": "jsr:@noble/secp256k1@^2.1.0",
     "@supabase-l2-blockchain/types": "npm:@supabase-l2-blockchain/types@^0.1.0",
-    "@supabase/supabase-js": "jsr:@supabase/supabase-js@^2.45.6",
     "drizzle-orm": "npm:drizzle-orm@^0.34.1",
-    "merkletreejs": "npm:merkletreejs@^0.4.0",
-    "postgres": "https://deno.land/x/postgresjs@v3.4.5/mod.js"
+    "merkletreejs": "npm:merkletreejs@^0.4.0"
   }
 }
