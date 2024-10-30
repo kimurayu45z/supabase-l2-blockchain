@@ -1,5 +1,5 @@
-import type { Any } from './any.js';
-import type { Tx } from './tx.js';
+import type { Any } from './any.d.ts';
+import type { Tx } from './tx.d.ts';
 
 export type BlockHeader = {
 	chain_id: string;

@@ -1,4 +1,4 @@
-import type { Any } from './any.js';
+import type { Any } from './any.d.ts';
 
 export type Tx = {
 	body: TxBody;
