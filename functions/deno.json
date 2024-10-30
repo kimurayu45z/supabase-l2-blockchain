@@ -8,7 +8,9 @@
     "./core/schema": "./core/schema/mod.ts",
     "./types": "./types/mod.ts",
     "./types/crypto": "./types/crypto/mod.ts",
-    "./modules/*": "./modules/*/mod.ts"
+    "./modules/auth": "./modules/auth/mod.ts",
+    "./modules/bank": "./modules/bank/mod.ts",
+    "./modules/crypto": "./modules/crypto/mod.ts"
   },
   "tasks": {
     "dev": "deno test --watch mod.ts"
