@@ -1,6 +1,5 @@
+import type { Block, BlockBody, BlockHeader } from '@supabase-l2-blockchain/types/core';
 import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
-
-import { Block, BlockBody, BlockHeader } from '../../types/block';
 
 const TABLE_BLOCK_HEADERS = 'block_headers';
 const TABLE_BLOCK_BODIES = 'block_bodies';

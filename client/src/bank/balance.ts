@@ -1,7 +1,6 @@
+import type { Balance } from '@supabase-l2-blockchain/types/bank';
+import type { Asset } from '@supabase-l2-blockchain/types/core';
 import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
-
-import type { Asset } from '../../types/asset';
-import type { Balance } from '../../types/balance';
 
 const TABLE_BALANCES = 'balances';
 

@@ -1,6 +1,7 @@
 {
   "name": "@supabase-l2-chain/functions",
   "version": "0.1.0",
+  "license": "MIT",
   "exports": "./mod.ts",
   "tasks": {
     "dev": "deno test --watch mod.ts"
