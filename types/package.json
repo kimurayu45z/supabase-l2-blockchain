@@ -10,5 +10,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kimurayu45z/supabase-l2-blockchain.git"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
