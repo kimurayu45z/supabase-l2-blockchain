@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer';
 
-import type { TxBody, TxSignDoc } from '@supabase-l2-blockchain/types/core/index.d.ts';
+import type { TxBody, TxSignDoc } from '@supabase-l2-blockchain/types/core';
 
 import { canonicalizeObjectForSerialization } from './crypto/json.ts';
 

@@ -7,7 +7,7 @@
     "jsr:@supabase/functions-js@*": "2.4.3",
     "jsr:@supabase/functions-js@^2.4.3": "2.4.3",
     "npm:@noble/hashes@1.2.0": "1.2.0",
-    "npm:@supabase-l2-blockchain/types@0.1": "0.1.0",
+    "npm:@supabase-l2-blockchain/types@0.1.1": "0.1.1",
     "npm:drizzle-orm@~0.34.1": "0.34.1",
     "npm:hash.js@1.1.7": "1.1.7",
     "npm:merkletreejs@0.4": "0.4.0",
@@ -75,8 +75,8 @@
         "@scure/base"
       ]
     },
-    "@supabase-l2-blockchain/types@0.1.0": {
-      "integrity": "sha512-j4DKh4MJHiuklYABA/ifecDxvvki2dsxmobenGKtcAxvzY1SIMkpnznJCuD4YKcQYDDPpenqp6EhB/b2S36f1w=="
+    "@supabase-l2-blockchain/types@0.1.1": {
+      "integrity": "sha512-VZ6z1uf7Evfo9e/TyAzUGVc3yWWJTErSVtvJStx4zWvutv4TBYXFEZpHDSHqPMvjBProfJyD2aBENFBAzDUCoQ=="
     },
     "@types/node-fetch@2.6.11": {
       "integrity": "sha512-24xFj9R5+rfQJLRyM56qh+wnVSYhyXC2tkoBndtY0U+vubqNsYXGjufB2nn8Q6gt0LrARwL6UBtMCSVCwl4B1g==",
@@ -625,7 +625,7 @@
       "jsr:@noble/secp256k1@^2.1.0",
       "jsr:@std/collections@^1.0.9",
       "jsr:@supabase/functions-js@^2.4.3",
-      "npm:@supabase-l2-blockchain/types@0.1",
+      "npm:@supabase-l2-blockchain/types@0.1.1",
       "npm:drizzle-orm@~0.34.1",
       "npm:merkletreejs@0.4"
     ]

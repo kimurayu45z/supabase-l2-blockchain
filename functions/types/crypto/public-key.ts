@@ -1,6 +1,6 @@
 import type { Buffer } from 'node:buffer';
 
-import type { AnyPossible } from '@supabase-l2-blockchain/types/core/index.d.ts';
+import type { AnyPossible } from '@supabase-l2-blockchain/types/core';
 
 export interface PublicKey extends AnyPossible {
 	bytes(): Buffer;

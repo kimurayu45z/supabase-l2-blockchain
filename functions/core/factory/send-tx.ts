@@ -1,6 +1,6 @@
 import '@supabase/functions-js/edge-runtime.d.ts';
 
-import type { SendTxRequestBody } from '@supabase-l2-blockchain/types/core/index.d.ts';
+import type { SendTxRequestBody } from '@supabase-l2-blockchain/types/core';
 
 import type { Chain } from '../../chain.ts';
 import type { MsgResponse } from '../../types/msg.ts';

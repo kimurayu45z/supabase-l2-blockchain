@@ -1,4 +1,4 @@
-import type { AnyPossibleConstructor } from '@supabase-l2-blockchain/types/core/index.d.ts';
+import type { AnyPossibleConstructor } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 

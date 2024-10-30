@@ -2,7 +2,7 @@ import type {
 	Any,
 	AnyPossible,
 	AnyPossibleConstructor
-} from '@supabase-l2-blockchain/types/core/index.d.ts';
+} from '@supabase-l2-blockchain/types/core';
 
 import type { Module } from './types/module.ts';
 import type { MsgConstructor } from './types/msg.ts';

@@ -7,7 +7,7 @@ import type {
 	Block,
 	BlockBody,
 	BlockHeader
-} from '@supabase-l2-blockchain/types/core/index.d.ts';
+} from '@supabase-l2-blockchain/types/core';
 
 import type { Chain } from '../chain.ts';
 import { getSignBytes } from '../types/block.ts';

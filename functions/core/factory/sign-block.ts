@@ -3,12 +3,7 @@ import '@supabase/functions-js/edge-runtime.d.ts';
 import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
-import type {
-	Any,
-	BlockBody,
-	BlockHeader,
-	Tx
-} from '@supabase-l2-blockchain/types/core/index.d.ts';
+import type { Any, BlockBody, BlockHeader, Tx } from '@supabase-l2-blockchain/types/core';
 import { MerkleTree } from 'merkletreejs';
 
 import type { Chain } from '../../chain.ts';
