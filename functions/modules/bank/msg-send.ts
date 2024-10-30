@@ -1,7 +1,7 @@
+import type { Asset } from '@supabase-l2-blockchain/types/core/index.d.ts';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import type { Asset } from '../../../types/asset.js';
 import type { Msg } from '../../types/msg.ts';
 import type { BankSchema } from './schema.ts';
 import { send } from './send.ts';
@@ -22,7 +22,7 @@ export class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 	async stateTransitionFunction(
 		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>
 	): Promise<MsgSendResponse> {
-		await send(this.value.from_address, this.value.to_address, this.value.assets, dbTx as any);
+		await send(dbTx as any, this.value.from_address, this.value.to_address, this.value.assets);
 
 		return {};
 	}

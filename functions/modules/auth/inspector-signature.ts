@@ -1,13 +1,13 @@
 import { Buffer } from 'node:buffer';
 
+import type { AnyPossibleConstructor, Tx } from '@supabase-l2-blockchain/types/core/index.d.ts';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 import { zip } from 'https://deno.land/std@0.102.0/collections/zip.ts';
 
-import type { AnyPossibleConstructor } from '../../../types/any.js';
-import { getSignBytes, type Tx } from '../../../types/tx.js';
-import type { Chain } from '../../chain.ts';
+import type { Chain } from '../../core/chain.ts';
 import type { PublicKey } from '../../types/crypto/public-key.ts';
+import { getSignBytes } from '../../types/tx.ts';
 import type { AddressConverter } from './address-converter.ts';
 import type { AuthSchema } from './schema.ts';
 

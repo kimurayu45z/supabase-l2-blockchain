@@ -1,7 +1,7 @@
+import type { Asset } from '@supabase-l2-blockchain/types/core/index.d.ts';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import type { Asset } from '../../../types/asset.js';
 import { burn } from './burn.ts';
 import { mint } from './mint.ts';
 import type { BankSchema } from './schema.ts';

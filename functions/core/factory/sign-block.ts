@@ -3,15 +3,18 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
+import type {
+	Any,
+	BlockBody,
+	BlockHeader,
+	Tx
+} from '@supabase-l2-blockchain/types/core/index.d.ts';
 import { MerkleTree } from 'merkletreejs';
 
-import type { Any } from '../../../types/any.d.ts';
-import type { BlockBody, BlockHeader } from '../../../types/block.d.ts';
-import type { Tx } from '../../../types/tx.d.ts';
-import type { Chain } from '../../chain.ts';
 import { getSignBytes } from '../../types/block.ts';
 import { canonicalizeObjectForSerialization } from '../../types/crypto/json.ts';
 import type { PublicKey } from '../../types/crypto/public-key.ts';
+import type { Chain } from '../chain.ts';
 import { produceBlock } from '../produce-block.ts';
 import type { CoreSchema } from '../schema/mod.ts';
 

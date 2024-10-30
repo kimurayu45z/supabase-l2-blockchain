@@ -1,7 +1,7 @@
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js/driver';
 
-import type { ModuleRegistry } from './modules/module-registry.ts';
-import { postgresDatabase } from './postgres.ts';
+import { postgresDatabase } from '../core/postgres.ts';
+import type { ModuleRegistry } from '../modules/module-registry.ts';
 
 export class Chain<Schema extends Record<string, unknown>> {
 	db: PostgresJsDatabase<Schema>;

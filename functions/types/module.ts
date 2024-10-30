@@ -1,9 +1,8 @@
+import type { AnyPossibleConstructor, Tx } from '@supabase-l2-blockchain/types/core/index.d.ts';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import type { AnyPossibleConstructor } from '../../types/any.d.ts';
-import type { Tx } from '../../types/tx.d.ts';
-import type { Chain } from '../chain.ts';
+import type { Chain } from '../core/chain.ts';
 import type { MsgConstructor } from './msg.ts';
 
 export interface Module<Schema extends Record<string, unknown>> {

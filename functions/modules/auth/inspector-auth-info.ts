@@ -1,8 +1,8 @@
+import type { Tx } from '@supabase-l2-blockchain/types/core/index.d.ts';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import type { Tx } from '../../../types/tx.js';
-import type { Chain } from '../../chain.ts';
+import type { Chain } from '../../core/chain.ts';
 import type { Msg } from '../../types/msg.ts';
 import type { AuthSchema } from './schema.ts';
 

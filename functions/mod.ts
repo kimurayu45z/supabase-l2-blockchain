@@ -1,4 +1,4 @@
-export * from './chain.ts';
+export * from './core/chain.ts';
 export * from './modules/module-registry.ts';
-export * from './postgres.ts';
-export * from './supabase-client.ts';
+export * from './core/postgres.ts';
+export * from './core/supabase-client.ts';

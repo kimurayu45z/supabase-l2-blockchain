@@ -1,4 +1,9 @@
-import type { Any, AnyPossible, AnyPossibleConstructor } from '../../types/any.d.ts';
+import type {
+	Any,
+	AnyPossible,
+	AnyPossibleConstructor
+} from '@supabase-l2-blockchain/types/core/index.d.ts';
+
 import type { Module } from '../types/module.ts';
 import type { MsgConstructor } from '../types/msg.ts';
 
