@@ -1,12 +1,12 @@
 {
   "name": "@supabase-l2-blockchain/client",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "files": [
     "dist"
   ],
   "exports": {
-    "./core": "./dist/core/",
-    "./modules/bank": "./dist/modules/bank/"
+    "./core": "./dist/core/index.js",
+    "./modules/bank": "./dist/modules/bank/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
