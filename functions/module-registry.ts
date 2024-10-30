@@ -4,8 +4,8 @@ import type {
 	AnyPossibleConstructor
 } from '@supabase-l2-blockchain/types/core/index.d.ts';
 
-import type { Module } from '../types/module.ts';
-import type { MsgConstructor } from '../types/msg.ts';
+import type { Module } from './types/module.ts';
+import type { MsgConstructor } from './types/msg.ts';
 
 export class ModuleRegistry<Schema extends Record<string, unknown>> {
 	public modules: { [name: string]: Module<Schema> };

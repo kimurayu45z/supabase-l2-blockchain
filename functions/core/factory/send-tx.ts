@@ -2,8 +2,8 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import type { SendTxRequestBody } from '@supabase-l2-blockchain/types/core/index.d.ts';
 
+import type { Chain } from '../../chain.ts';
 import type { MsgResponse } from '../../types/msg.ts';
-import type { Chain } from '../chain.ts';
 
 export function sendTxFactory<Schema extends Record<string, unknown>>(
 	chain: Chain<Schema>

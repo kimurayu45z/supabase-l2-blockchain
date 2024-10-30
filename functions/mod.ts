@@ -1,2 +1,2 @@
-export * from './core/chain.ts';
-export * from './modules/module-registry.ts';
+export * from './chain.ts';
+export * from './module-registry.ts';
