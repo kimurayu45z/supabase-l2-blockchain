@@ -11,10 +11,10 @@ import type {
 } from '@supabase-l2-blockchain/types/core/index.d.ts';
 import { MerkleTree } from 'merkletreejs';
 
+import type { Chain } from '../../chain.ts';
 import { getSignBytes } from '../../types/block.ts';
 import { canonicalizeObjectForSerialization } from '../../types/crypto/json.ts';
 import type { PublicKey } from '../../types/crypto/public-key.ts';
-import type { Chain } from '../chain.ts';
 import { produceBlock } from '../produce-block.ts';
 import type { CoreSchema } from '../schema/mod.ts';
 
