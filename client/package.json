@@ -15,7 +15,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@supabase-l2-blockchain/types": "^0.1.0",
+    "@supabase-l2-blockchain/types": "^0.1.1",
     "@supabase/supabase-js": "^2.45.6"
   }
 }
