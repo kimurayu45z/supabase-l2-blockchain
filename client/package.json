@@ -6,11 +6,12 @@
   ],
   "exports": {
     "./core": "./dist/core/index.js",
+    "./modules/auth": "./dist/modules/auth/index.js",
     "./modules/bank": "./dist/modules/bank/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --build"
+    "build": "tsc --build --clean && tsc --build"
   },
   "author": "KIMURA Yu",
   "license": "ISC",
