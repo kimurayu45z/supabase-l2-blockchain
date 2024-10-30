@@ -3,10 +3,10 @@ import * as crypto from 'node:crypto';
 
 import { zip } from 'https://deno.land/std@0.102.0/collections/zip.ts';
 
-import type { Any } from '../../types/any.ts';
-import type { Block, BlockBody, BlockHeader } from '../../types/block.ts';
-import { canonicalizeObjectForSerialization } from '../../types/json.ts';
+import type { Any } from '../../types/any.d.ts';
+import type { Block, BlockBody, BlockHeader } from '../../types/block.d.ts';
 import type { Chain } from '../chain.ts';
+import { getSignBytes } from '../types/block.ts';
 import type { PublicKey } from '../types/crypto/public-key.ts';
 import { block_bodies, block_headers, blocks } from './schema/blocks.ts';
 import type { CoreSchema } from './schema/mod.ts';
@@ -75,11 +75,4 @@ export async function produceBlock(
 	});
 
 	return block;
-}
-
-export function getSignBytes(blockHeader: BlockHeader): Buffer {
-	const canonical = canonicalizeObjectForSerialization(blockHeader);
-	const json = JSON.stringify(canonical);
-
-	return Buffer.from(json);
 }

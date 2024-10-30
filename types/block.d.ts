@@ -1,6 +1,5 @@
-import { Any } from './any.ts';
-import { canonicalizeObjectForSerialization } from './json.ts';
-import type { Tx } from './tx.ts';
+import type { Any } from './any.js';
+import type { Tx } from './tx.js';
 
 export type BlockHeader = {
 	chain_id: string;

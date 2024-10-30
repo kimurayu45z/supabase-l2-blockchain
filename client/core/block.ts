@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
 
 import { Block, BlockBody, BlockHeader } from '../../types/block';
 

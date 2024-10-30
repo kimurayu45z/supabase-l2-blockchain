@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
 
 import type { Tx } from '../../types/tx';
 

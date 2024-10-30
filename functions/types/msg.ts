@@ -1,7 +1,7 @@
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import type { AnyPossibleConstructor } from '../../types/any.ts';
+import type { AnyPossibleConstructor } from '../../types/any.d.ts';
 
 // deno-lint-ignore no-empty-interface
 export interface MsgResponse {}

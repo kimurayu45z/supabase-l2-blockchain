@@ -3,19 +3,21 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
-import * as ed from '@noble/ed25519';
 import { MerkleTree } from 'merkletreejs';
 
-import type { Any } from '../../../types/any.ts';
-import type { BlockBody, BlockHeader } from '../../../types/block.ts';
-import { canonicalizeObjectForSerialization } from '../../../types/json.ts';
-import type { Tx } from '../../../types/tx.ts';
+import type { Any } from '../../../types/any.d.ts';
+import type { BlockBody, BlockHeader } from '../../../types/block.d.ts';
+import type { Tx } from '../../../types/tx.d.ts';
 import type { Chain } from '../../chain.ts';
-import { getSignBytes, produceBlock } from '../produce-block.ts';
+import { getSignBytes } from '../../types/block.ts';
+import { canonicalizeObjectForSerialization } from '../../types/crypto/json.ts';
+import type { PublicKey } from '../../types/crypto/public-key.ts';
+import { produceBlock } from '../produce-block.ts';
 import type { CoreSchema } from '../schema/mod.ts';
 
 export function signBlockFactory(
 	chain: Chain<CoreSchema>,
+	signHandler: (signer: PublicKey, signBytes: Buffer) => Promise<Buffer>,
 	postBlockHandler: (blockBytes: Buffer) => Promise<void>
 ): Deno.ServeHandler {
 	return async (_) => {
@@ -50,16 +52,17 @@ export function signBlockFactory(
 		const blockHeader = createBlockHeader(chain.id, lastBlock.height, lastBlock.hash, pendingTxs);
 		const signBytes = getSignBytes(blockHeader);
 
-		// TODO
-		const privateKeys = [Buffer.from('')] as Buffer[];
-		const signatures = privateKeys.map((privateKey) =>
-			Buffer.from(ed.sign(signBytes, privateKey)).toString('hex')
+		const signatures = await Promise.all(
+			(lastBlockBody.next_signers as Any[]).map(async (signerAny) => {
+				const signer = chain.moduleRegistry.extractAny<PublicKey>(signerAny);
+				return await signHandler(signer, signBytes);
+			})
 		);
 
 		const blockBody: BlockBody = {
 			txs: pendingTxs,
 			next_signers: lastBlockBody.next_signers as Any[],
-			signatures: signatures
+			signatures: signatures.map((signature) => signature.toString('hex'))
 		};
 
 		const block = await produceBlock(chain, blockHeader, blockBody);

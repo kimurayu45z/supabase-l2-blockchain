@@ -1,6 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
-import type { SendTxRequestBody } from '../../../types/send-tx.ts';
+import type { SendTxRequestBody } from '../../../types/requests.d.ts';
 import type { Chain } from '../../chain.ts';
 import type { MsgResponse } from '../../types/msg.ts';
 

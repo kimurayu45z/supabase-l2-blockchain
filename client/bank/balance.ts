@@ -1,7 +1,7 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
 
 import type { Asset } from '../../types/asset';
-import { createBalanceMap, type Balance } from '../../types/balance';
+import type { Balance } from '../../types/balance';
 
 const TABLE_BALANCES = 'balances';
 
@@ -38,4 +38,26 @@ export async function getBalances(supabase: SupabaseClient, address: string): Pr
 	const map = createBalanceMap(res.data);
 
 	return map[address].assets;
+}
+
+export type BalanceMap = {
+	[address: string]: {
+		assets: Asset[];
+	};
+};
+
+export function createBalanceMap(balances: Balance[]): BalanceMap {
+	const balanceMap: BalanceMap = {};
+	for (const balance of balances) {
+		if (!balanceMap[balance.address]) {
+			balanceMap[balance.address] = {
+				assets: []
+			};
+		}
+		balanceMap[balance.address].assets.push({
+			id: balance.asset_id,
+			amount: balance.amount
+		});
+	}
+	return balanceMap;
 }
