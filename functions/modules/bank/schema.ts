@@ -6,6 +6,8 @@ export const balances = pgTable('balances', {
 	amount: numeric('amount').notNull()
 });
 
-export type BankSchema = {
-	balances: typeof balances;
+export const bankSchema = {
+	balances
 };
+
+export type BankSchema = typeof bankSchema;

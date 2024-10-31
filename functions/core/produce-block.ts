@@ -1,12 +1,12 @@
 import type { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
-import type { Tx } from '@supabase-l2-blockchain/types';
 import type {
 	Any,
 	Block,
 	BlockBody,
 	BlockHeader,
+	Tx,
 	TxResponse
 } from '@supabase-l2-blockchain/types/core';
 import { eq } from 'drizzle-orm';

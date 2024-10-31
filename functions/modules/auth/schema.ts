@@ -5,6 +5,8 @@ export const accounts = pgTable('accounts', {
 	sequence: serial('sequence').default(0).notNull()
 });
 
-export type AuthSchema = {
-	accounts: typeof accounts;
+export const authSchema = {
+	accounts
 };
+
+export type AuthSchema = typeof authSchema;
