@@ -5,13 +5,6 @@ import type { Tx } from '@supabase-l2-blockchain/types';
 import type { TxBody, TxSignDoc } from '@supabase-l2-blockchain/types/core';
 
 import { canonicalizeObjectForSerialization } from './crypto/json.ts';
-import type { MsgResponse } from './msg.ts';
-
-export type TxResponse = {
-	success: boolean;
-	inspection_error?: string;
-	msg_responses: MsgResponse[];
-};
 
 export function getTxSignBytes(txBody: TxBody, chainId: string, sequence: number): Buffer {
 	const signDoc: TxSignDoc = {

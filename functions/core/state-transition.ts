@@ -1,10 +1,9 @@
 import type { Tx } from '@supabase-l2-blockchain/types';
+import type { MsgResponse, TxResponse } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
 import type { Chain } from '../chain.ts';
-import type { MsgResponse } from '../types/msg.ts';
-import type { TxResponse } from '../types/tx.ts';
 
 /**
  *

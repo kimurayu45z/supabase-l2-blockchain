@@ -2,14 +2,20 @@ import type { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
 import type { Tx } from '@supabase-l2-blockchain/types';
-import type { Any, Block, BlockBody, BlockHeader } from '@supabase-l2-blockchain/types/core';
+import type {
+	Any,
+	Block,
+	BlockBody,
+	BlockHeader,
+	TxResponse
+} from '@supabase-l2-blockchain/types/core';
 import { eq } from 'drizzle-orm';
 import { MerkleTree } from 'merkletreejs';
 
 import type { Chain } from '../chain.ts';
 import { getBlockSignBytes } from '../types/block.ts';
 import type { PublicKey } from '../types/crypto/public-key.ts';
-import { getTxBytes, type TxResponse } from '../types/tx.ts';
+import { getTxBytes } from '../types/tx.ts';
 import { block_bodies, block_headers, blocks } from './schema/blocks.ts';
 import type { CoreSchema } from './schema/mod.ts';
 import { txs as tableTxs } from './schema/txs.ts';
