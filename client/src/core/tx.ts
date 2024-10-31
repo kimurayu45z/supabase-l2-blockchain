@@ -1,61 +1,101 @@
-import type { Tx, TxBody, TxSignDoc } from '@supabase-l2-blockchain/types/core';
+import type { Tx, TxBody, TxResponse, TxSignDoc } from '@supabase-l2-blockchain/types/core';
 import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
 
 const TABLE_TXS = 'txs';
 
-type PendingTx = Tx & {
+type PendingTx = {
 	hash: string;
+	tx: Tx;
 	height: null;
-
-	success: null;
-	inspection_error: null;
-	msg_responses: null;
+	response: null;
 };
 
-type ConfirmedTx = Tx & {
+type ConfirmedTx = {
 	hash: string;
+	tx: Tx;
 	height: number;
-
-	success: boolean;
-	inspection_error: string | null;
-	msg_responses: { success?: unknown; error?: string }[];
+	response: TxResponse;
 };
+
+type SchemaTx = {
+	hash: string;
+} & Tx & {
+		height: number | null;
+	} & Partial<TxResponse>;
+
+function createPendingTx(schemaTx: SchemaTx): PendingTx {
+	return {
+		hash: schemaTx.hash,
+		tx: {
+			body: schemaTx.body,
+			auth_info: schemaTx.auth_info,
+			signatures: schemaTx.signatures
+		},
+		height: null,
+		response: null
+	};
+}
+
+function createConfirmedTx(schemaTx: SchemaTx): ConfirmedTx {
+	return {
+		hash: schemaTx.hash,
+		tx: {
+			body: schemaTx.body,
+			auth_info: schemaTx.auth_info,
+			signatures: schemaTx.signatures
+		},
+		height: schemaTx.height!,
+		response: {
+			success: schemaTx.success!,
+			inspection_error: schemaTx.inspection_error,
+			msg_responses: schemaTx.msg_responses || []
+		}
+	};
+}
 
 export async function getTx(
 	supabase: SupabaseClient,
 	hash: string
 ): Promise<PendingTx | ConfirmedTx> {
-	const res = await supabase
-		.from(TABLE_TXS)
-		.select('*')
-		.eq('hash', hash)
-		.single<PendingTx | ConfirmedTx>();
+	const res = await supabase.from(TABLE_TXS).select('*').eq('hash', hash).single<SchemaTx>();
 	if (res.error) {
 		throw res.error;
 	}
 
-	return res.data;
+	const data: PendingTx | ConfirmedTx =
+		res.data.height && res.data.success ? createConfirmedTx(res.data) : createPendingTx(res.data);
+
+	return data;
 }
 
-export async function getTxs(supabase: SupabaseClient, height: bigint): Promise<ConfirmedTx[]> {
+export async function getConfirmedTxs(
+	supabase: SupabaseClient,
+	height: bigint
+): Promise<ConfirmedTx[]> {
 	const res = await supabase
 		.from(TABLE_TXS)
 		.select('*')
 		.eq('height', height)
-		.returns<ConfirmedTx[]>();
+		.eq('success', true)
+		.returns<SchemaTx[]>();
 	if (res.error) {
 		throw res.error;
 	}
-	return res.data;
+
+	const data: ConfirmedTx[] = res.data.map((datum) => createConfirmedTx(datum));
+
+	return data;
 }
 
 export async function getPendingTxs(supabase: SupabaseClient): Promise<PendingTx[]> {
-	const res = await supabase.from(TABLE_TXS).select('*').eq('height', null).returns<PendingTx[]>();
+	const res = await supabase.from(TABLE_TXS).select('*').eq('height', null).returns<SchemaTx[]>();
 	if (res.error) {
 		throw res.error;
 	}
 
-	return res.data;
+	const data: PendingTx[] = res.data.map((datum) => createPendingTx(datum));
+
+	return data;
 }
 
 function canonicalizeObjectForSerialization(value: object): unknown {
@@ -80,7 +120,7 @@ function canonicalizeObjectForSerialization(value: object): unknown {
 	return value === undefined ? null : value;
 }
 
-export function getSignBytes(txBody: TxBody, chainId: string, sequence: number): Buffer {
+export function getTxSignBytes(txBody: TxBody, chainId: string, sequence: number): Buffer {
 	const signDoc: TxSignDoc = {
 		body: txBody,
 		chain_id: chainId,
