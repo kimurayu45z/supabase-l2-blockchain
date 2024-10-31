@@ -1,21 +1,13 @@
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import { drizzle } from 'npm:drizzle-orm/postgres-js';
-import postgres from 'npm:postgres';
+
+import { createDb } from './chain.ts';
 
 export async function createMockDb<Schema extends Record<string, unknown>>(schema: Schema) {
 	const databaseContainer = await new PostgreSqlContainer().start();
-	const dbUrl = databaseContainer.getConnectionUri();
+	const dbUri = databaseContainer.getConnectionUri();
 
-	const db = drizzle(
-		postgres(dbUrl, {
-			prepare: false
-		}),
-		{
-			schema: schema,
-			logger: true
-		}
-	);
+	const db = createDb(dbUri, { prepare: false }, { schema: schema, logger: true });
 
 	migrate(db, { migrationsFolder: './migrations' });
 
