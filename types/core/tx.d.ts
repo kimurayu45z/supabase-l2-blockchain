@@ -26,3 +26,17 @@ export type TxSignDoc = {
 	chain_id: string;
 	sequence: number;
 };
+
+export type MsgResponse =
+	| {
+			success: unknown;
+	  }
+	| {
+			error: string;
+	  };
+
+export type TxResponse = {
+	success: boolean;
+	inspection_error?: string;
+	msg_responses: MsgResponse[];
+};
