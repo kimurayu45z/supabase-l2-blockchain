@@ -21,12 +21,9 @@ export class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 
 	async stateTransitionFunction(
 		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>
-	): Promise<MsgSendResponse> {
+	): Promise<unknown> {
 		await send(dbTx as any, this.value.from_address, this.value.to_address, this.value.assets);
 
 		return {};
 	}
 }
-
-// deno-lint-ignore ban-types
-export type MsgSendResponse = {};

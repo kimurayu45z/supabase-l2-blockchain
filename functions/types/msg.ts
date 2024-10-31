@@ -2,8 +2,10 @@ import type { AnyPossibleConstructor } from '@supabase-l2-blockchain/types/core'
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-// deno-lint-ignore no-empty-interface
-export interface MsgResponse {}
+export type MsgResponse = {
+	success?: unknown;
+	error?: string;
+};
 
 export interface Msg<Schema extends Record<string, unknown>> {
 	constructor: MsgConstructor<Schema>;
@@ -13,7 +15,7 @@ export interface Msg<Schema extends Record<string, unknown>> {
 
 	stateTransitionFunction(
 		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>
-	): Promise<MsgResponse>;
+	): Promise<unknown>;
 }
 
 export type MsgConstructor<Schema extends Record<string, unknown>> = AnyPossibleConstructor<

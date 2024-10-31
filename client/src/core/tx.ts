@@ -5,12 +5,20 @@ const TABLE_TXS = 'txs';
 
 type PendingTx = Tx & {
 	hash: string;
-	height: OnErrorEventHandlerNonNull;
+	height: null;
+
+	success: null;
+	inspection_error: null;
+	msg_responses: null;
 };
 
 type ConfirmedTx = Tx & {
 	hash: string;
 	height: number;
+
+	success: boolean;
+	inspection_error: string | null;
+	msg_responses: { success?: unknown; error?: string }[];
 };
 
 export async function getTx(

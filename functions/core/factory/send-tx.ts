@@ -3,34 +3,27 @@ import '@supabase/functions-js/edge-runtime.d.ts';
 import type { SendTxRequestBody } from '@supabase-l2-blockchain/types/core';
 
 import type { Chain } from '../../chain.ts';
-import type { MsgResponse } from '../../types/msg.ts';
+import { getTxHash } from '../../types/tx.ts';
+import type { CoreSchema } from '../schema/mod.ts';
+import { txs } from '../schema/txs.ts';
 
-export function sendTxFactory<Schema extends Record<string, unknown>>(
-	chain: Chain<Schema>
-): Deno.ServeHandler {
+export function sendTxFactory<Schema extends CoreSchema>(chain: Chain<Schema>): Deno.ServeHandler {
 	return async (req) => {
 		const { tx }: SendTxRequestBody = await req.json();
-		const res: MsgResponse[] = [];
+		if (!tx) {
+			return new Response(JSON.stringify({ error: 'tx is required' }), { status: 400 });
+		}
 
-		await chain.db.transaction(async (dbTx) => {
-			try {
-				for (const moduleName in chain.moduleRegistry.modules) {
-					await chain.moduleRegistry.modules[moduleName].inspector(chain, dbTx, tx);
-				}
+		const hash = getTxHash(tx).toString('hex');
 
-				for (const msg of tx.body.msgs) {
-					const MsgConstructor = chain.moduleRegistry.msgs[msg.type];
-					if (!MsgConstructor) {
-						throw new Error(`Unknown message type: ${msg.type}`);
-					}
-					const msgInstance = new MsgConstructor(msg.value);
-					res.push(await msgInstance.stateTransitionFunction(dbTx));
-				}
-			} catch (e) {
-				dbTx.rollback();
-				throw e;
-			}
+		await chain.db.insert(txs).values({
+			hash: hash,
+			body: tx.body,
+			auth_info: tx.auth_info,
+			signatures: tx.signatures
 		});
+
+		const res: { hash: string } = { hash: hash };
 
 		return new Response(JSON.stringify(res), { headers: { 'Content-Type': 'application/json' } });
 	};

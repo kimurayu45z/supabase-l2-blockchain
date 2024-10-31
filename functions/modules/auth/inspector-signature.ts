@@ -7,7 +7,7 @@ import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/sessio
 
 import type { Chain } from '../../chain.ts';
 import type { PublicKey } from '../../types/crypto/public-key.ts';
-import { getSignBytes } from '../../types/tx.ts';
+import { getTxSignBytes } from '../../types/tx.ts';
 import type { AddressConverter } from './address-converter.ts';
 import type { AuthSchema } from './schema.ts';
 
@@ -26,7 +26,7 @@ export async function inspectorSignature<Schema extends AuthSchema>(
 			throw Error(`Unsupported public key type: ${pubKey.constructor.type()}`);
 		}
 
-		const signBytes = getSignBytes(tx.body, chain.id, signerInfo.sequence);
+		const signBytes = getTxSignBytes(tx.body, chain.id, signerInfo.sequence);
 
 		const match = pubKey.verify(signBytes, Buffer.from(signature, 'hex'));
 

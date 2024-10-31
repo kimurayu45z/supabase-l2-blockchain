@@ -1,10 +1,19 @@
 import { Buffer } from 'node:buffer';
+import * as crypto from 'node:crypto';
 
+import type { Tx } from '@supabase-l2-blockchain/types';
 import type { TxBody, TxSignDoc } from '@supabase-l2-blockchain/types/core';
 
 import { canonicalizeObjectForSerialization } from './crypto/json.ts';
+import type { MsgResponse } from './msg.ts';
 
-export function getSignBytes(txBody: TxBody, chainId: string, sequence: number): Buffer {
+export type TxResponse = {
+	success: boolean;
+	inspection_error?: string;
+	msg_responses: MsgResponse[];
+};
+
+export function getTxSignBytes(txBody: TxBody, chainId: string, sequence: number): Buffer {
 	const signDoc: TxSignDoc = {
 		body: txBody,
 		chain_id: chainId,
@@ -14,4 +23,19 @@ export function getSignBytes(txBody: TxBody, chainId: string, sequence: number):
 	const json = JSON.stringify(canonical);
 
 	return Buffer.from(json);
+}
+
+export function getTxBytes(tx: Tx): Buffer {
+	const canonical = canonicalizeObjectForSerialization(tx);
+	const json = JSON.stringify(canonical);
+	const bytes = Buffer.from(json);
+
+	return bytes;
+}
+
+export function getTxHash(tx: Tx): Buffer {
+	const bytes = getTxBytes(tx);
+	const hash = crypto.createHash('sha256').update(bytes).digest();
+
+	return hash;
 }
