@@ -35,7 +35,7 @@ export async function produceBlock(
 ): Promise<Block> {
 	// Get last block info
 	const lastBlock = await chain.db.query.blocks.findFirst({
-		where: (block, { eq }) => eq(block.chain_id, blockHeader.chain_id),
+		where: (block, { eq }) => eq(block.chain_id, chain.id),
 		orderBy: (block, { desc }) => [desc(block.height)]
 	});
 	if (!lastBlock) {
@@ -58,6 +58,8 @@ export async function produceBlock(
 	);
 
 	const txResponses: { [hash: string]: TxResponse } = {};
+
+	let block: Block;
 
 	await chain.db.transaction(async (dbTx) => {
 		try {
@@ -85,49 +87,35 @@ export async function produceBlock(
 						.where(eq(tableTxs.hash, txWithHash.hash));
 				});
 			}
-		} catch (e) {
-			dbTx.rollback();
-			throw e as Error;
-		}
-	});
 
-	// Create success txs list
-	const txs: Tx[] = sortedTxsWithHash
-		.filter((txWithHash) => txResponses[txWithHash.hash].success)
-		.map((txWithHash) => txWithHash.tx);
+			// Create success txs list
+			const txs: Tx[] = sortedTxsWithHash
+				.filter((txWithHash) => txResponses[txWithHash.hash].success)
+				.map((txWithHash) => txWithHash.tx);
 
-	// Create new block header object
-	const blockHeader = createBlockHeader(
-		chain.id,
-		lastBlock.height,
-		lastBlock.hash,
-		sortedTxsWithHash.map((tx) => tx.tx)
-	);
-	const signBytes = getBlockSignBytes(blockHeader);
+			// Create new block header object
+			const blockHeader = createBlockHeader(
+				chain.id,
+				lastBlock.height,
+				lastBlock.hash,
+				sortedTxsWithHash.map((tx) => tx.tx)
+			);
+			const signBytes = getBlockSignBytes(blockHeader);
 
-	const signatures = await Promise.all(
-		signers.map(async (signer) => await signHandler(signer, signBytes))
-	);
+			const signatures = await Promise.all(
+				signers.map(async (signer) => await signHandler(signer, signBytes))
+			);
 
-	// Create new block body object
-	const blockBody: BlockBody = {
-		txs: txs,
-		next_signers: signersAny,
-		signatures: signatures.map((signature) => signature.toString('hex'))
-	};
+			// Create new block body object
+			const blockBody: BlockBody = {
+				txs: txs,
+				next_signers: signersAny,
+				signatures: signatures.map((signature) => signature.toString('hex'))
+			};
 
-	// Create block hash
-	const hash = crypto.createHash('sha256').update(signBytes).digest('hex');
+			// Create block hash
+			const hash = crypto.createHash('sha256').update(signBytes).digest('hex');
 
-	// Create new block object
-	const block: Block = {
-		hash: hash,
-		header: blockHeader,
-		body: blockBody
-	};
-
-	await chain.db.transaction(async (dbTx) => {
-		try {
 			await dbTx.insert(blocks).values({
 				hash: hash,
 				chain_id: blockHeader.chain_id,
@@ -135,13 +123,20 @@ export async function produceBlock(
 			});
 			await dbTx.insert(block_headers).values(blockHeader);
 			await dbTx.insert(block_bodies).values({ block_hash: hash, ...blockBody });
+
+			// Create new block object
+			block = {
+				hash: hash,
+				header: blockHeader,
+				body: blockBody
+			};
 		} catch (e) {
 			dbTx.rollback();
-			throw e;
+			throw e as Error;
 		}
 	});
 
-	return block;
+	return block!;
 }
 
 function createBlockHeader(
