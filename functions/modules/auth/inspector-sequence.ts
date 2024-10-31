@@ -9,7 +9,7 @@ import { accounts, type AuthSchema } from './schema.ts';
 
 export async function inspectorSequence<Schema extends AuthSchema>(
 	chain: Chain<Schema>,
-	dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
+	dbTx: PgTransaction<PgQueryResultHKT, AuthSchema, ExtractTablesWithRelations<AuthSchema>>,
 	tx: Tx,
 	addressConverter: AddressConverter
 ) {
@@ -17,23 +17,17 @@ export async function inspectorSequence<Schema extends AuthSchema>(
 		const pubKey = chain.moduleRegistry.extractAny<PublicKey>(signerInfo.public_key);
 		const address = addressConverter(pubKey);
 
-		const sequence = await dbTx
-			.select()
-			.from(accounts)
-			.where(eq(accounts.address, address))
-			.limit(1)
-			.then(async (rows) => {
-				// Insert when empty
-				if (rows.length === 0) {
-					await dbTx.insert(accounts).values({
-						address: address,
-						sequence: 0
-					});
-					return 0;
-				}
-
-				return rows[0].sequence;
+		const account = await dbTx.query.accounts.findFirst({
+			where: (row, { eq }) => eq(row.address, address)
+		});
+		if (!account) {
+			await dbTx.insert(accounts).values({
+				address: address,
+				sequence: 0
 			});
+		}
+
+		const sequence = account?.sequence ?? 0;
 
 		// Validation
 		if (sequence !== signerInfo.sequence) {

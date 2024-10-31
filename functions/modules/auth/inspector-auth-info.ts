@@ -29,6 +29,7 @@ export async function inspectorAuthInfo<Schema extends AuthSchema>(
 		}
 	}
 
+	// Check duplicated signer
 	for (const signerInfo of tx.auth_info.signer_infos) {
 		const address = signerInfo.public_key.value as string;
 

@@ -38,7 +38,7 @@ export class AuthModule<Schema extends AuthSchema> implements Module<Schema> {
 		tx: Tx
 	): Promise<void> {
 		await inspectorAuthInfo(chain, dbTx, tx);
-		await inspectorSequence(chain, dbTx, tx, this.addressConverter);
+		await inspectorSequence(chain, dbTx as any, tx, this.addressConverter);
 		await inspectorSignature(chain, dbTx, tx, this.addressConverter, this.supportedPublicKeyTypes);
 	}
 }

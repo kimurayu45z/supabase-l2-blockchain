@@ -102,6 +102,7 @@ export async function produceBlock(
 			);
 			const signBytes = getBlockSignBytes(blockHeader);
 
+			// Create Signatures
 			const signatures = await Promise.all(
 				signers.map(async (signer) => await signHandler(signer, signBytes))
 			);
