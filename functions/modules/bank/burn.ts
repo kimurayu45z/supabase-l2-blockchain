@@ -2,7 +2,7 @@ import type { Asset } from '@supabase-l2-blockchain/types/core';
 import { and, eq, type ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import { bankSchema, type BankSchema } from './schema.ts';
+import { balances, type BankSchema } from './schema.ts';
 
 export async function burn(
 	dbTx: PgTransaction<PgQueryResultHKT, BankSchema, ExtractTablesWithRelations<BankSchema>>,
@@ -22,10 +22,8 @@ export async function burn(
 		}
 
 		await dbTx
-			.update(bankSchema.balances)
+			.update(balances)
 			.set({ amount: balanceAfter.toString() })
-			.where(
-				and(eq(bankSchema.balances.address, address), eq(bankSchema.balances.asset_id, asset.id))
-			);
+			.where(and(eq(balances.address, address), eq(balances.asset_id, asset.id)));
 	}
 }

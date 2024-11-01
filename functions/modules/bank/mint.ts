@@ -2,7 +2,7 @@ import type { Asset } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import { bankSchema, type BankSchema } from './schema.ts';
+import { balances, type BankSchema } from './schema.ts';
 
 export async function mint(
 	dbTx: PgTransaction<PgQueryResultHKT, BankSchema, ExtractTablesWithRelations<BankSchema>>,
@@ -19,14 +19,14 @@ export async function mint(
 		const balanceAfter = balance + asset.amount;
 
 		await dbTx
-			.insert(bankSchema.balances)
+			.insert(balances)
 			.values({
 				address: address,
 				asset_id: asset.id,
 				amount: balanceAfter.toString()
 			})
 			.onConflictDoUpdate({
-				target: [bankSchema.balances.address, bankSchema.balances.asset_id],
+				target: [balances.address, balances.asset_id],
 				set: {
 					amount: balanceAfter.toString()
 				}

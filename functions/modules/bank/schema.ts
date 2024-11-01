@@ -1,6 +1,6 @@
 import { numeric, pgTable, text } from 'drizzle-orm/pg-core';
 
-const balances = pgTable('balances', {
+export const balances = pgTable('balances', {
 	address: text('address').primaryKey(),
 	asset_id: text('asset_id').primaryKey(),
 	amount: numeric('amount').notNull()
