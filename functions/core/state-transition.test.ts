@@ -17,15 +17,15 @@ Deno.test('stateTransition', async () => {
 			CREATE TABLE txs
 			(
 				hash TEXT NOT NULL PRIMARY KEY,
-				created_at TIMESTAMP NOT NULL DEFAULT NOW()
+				created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 				body JSONB NOT NULL,
 				auth_info JSONB NOT NULL,
 				signatures TEXT[] NOT NULL,
 				height INTEGER,
 				success BOOLEAN,
 				inspection_error TEXT,
-				msg_responses JSONB[] NOT NULL,
-			)
+				msg_responses JSONB[] NOT NULL
+			);
 			`
 		),
 		new ModuleRegistry(new CryptoModule())

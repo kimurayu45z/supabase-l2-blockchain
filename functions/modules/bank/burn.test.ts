@@ -20,6 +20,12 @@ Deno.test('burn', async () => {
 		`
 	);
 
+	await db.insert(balances).values({
+		address: 'address',
+		asset_id: 'asset_id',
+		amount: '100'
+	});
+
 	await db.transaction(async (dbTx) => {
 		await burn(dbTx, 'address', [{ id: 'asset_id', amount: BigInt(100) }]);
 	});

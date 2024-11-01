@@ -5,7 +5,7 @@ import { Chain } from '../../chain.ts';
 import { ModuleRegistry } from '../../module-registry.ts';
 import { CryptoModule } from '../../modules/crypto/crypto.ts';
 import { coreSchema } from '../schema/mod.ts';
-import { sendTxFactory } from './send-tx.ts';
+import { sendTx } from './send-tx.ts';
 
 Deno.test('sendTx', async () => {
 	const chainId = 'test';
@@ -17,21 +17,19 @@ Deno.test('sendTx', async () => {
 			CREATE TABLE txs
 			(
 				hash TEXT NOT NULL PRIMARY KEY,
-				created_at TIMESTAMP NOT NULL DEFAULT NOW()
+				created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 				body JSONB NOT NULL,
 				auth_info JSONB NOT NULL,
 				signatures TEXT[] NOT NULL,
 				height INTEGER,
 				success BOOLEAN,
 				inspection_error TEXT,
-				msg_responses JSONB[] NOT NULL,
+				msg_responses JSONB[]
 			)
 			`
 		),
 		new ModuleRegistry(new CryptoModule())
 	);
-
-	const sendTx = sendTxFactory(chain);
 
 	// Empty Tx is allowed if AuthModule is detached
 	const tx: Tx = {
@@ -42,10 +40,6 @@ Deno.test('sendTx', async () => {
 		signatures: []
 	};
 
-	const res = await sendTx(
-		new Request({ body: new Blob([JSON.stringify({ tx })]).stream() } as any),
-		{} as any
-	);
-	const body = await res.json();
-	console.log(body);
+	const hash = await sendTx(chain, tx);
+	console.log(hash);
 });
