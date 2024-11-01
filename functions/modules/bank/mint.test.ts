@@ -5,9 +5,20 @@ import { mint } from './mint.ts';
 import { balances } from './schema.ts';
 
 Deno.test('mint', async () => {
-	const db = await createMockDb({
-		balances
-	});
+	const db = await createMockDb(
+		{
+			balances
+		},
+		`
+		CREATE TABLE balances
+		(
+			address TEXT NOT NULL,
+			asset_id TEXT NOT NULL,
+			amount NUMERIC NOT NULL,
+			PRIMARY KEY (address, asset_id)
+		)
+		`
+	);
 
 	await db.transaction(async (dbTx) => {
 		await mint(dbTx, 'address', [{ id: 'asset_id', amount: BigInt(100) }]);

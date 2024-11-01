@@ -12,11 +12,26 @@ Deno.test('produceBlock', async () => {
 	const chainId = 'test';
 	const chain = new Chain(
 		chainId,
-		await createMockDb({ ...coreSchema }),
+		await createMockDb(
+			{ ...coreSchema },
+			`
+			CREATE TABLE block_headers
+			(
+			)
+
+			CREATE TABLE block_bodies
+			(
+			)
+
+			CREATE TABLE blocks
+			(
+			)
+			`
+		),
 		new ModuleRegistry(new CryptoModule())
 	);
 
-	const [privateKey, publicKey] = createKeyPairEd25519(Buffer.from('seed'));
+	const [privateKey, _publicKey] = createKeyPairEd25519(Buffer.from('seed'));
 
 	const block = await produceBlock(chain, [], (_, signBytes) =>
 		Promise.resolve(signEd25519(privateKey, signBytes))

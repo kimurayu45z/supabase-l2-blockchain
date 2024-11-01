@@ -2,7 +2,7 @@ import '@supabase/functions-js/edge-runtime.d.ts';
 
 import { Buffer } from 'node:buffer';
 
-import type { Tx } from '@supabase-l2-blockchain/types/core';
+import type { AuthInfo, Tx, TxBody } from '@supabase-l2-blockchain/types/core';
 
 import type { Chain } from '../../chain.ts';
 import { canonicalizeObjectForSerialization } from '../../types/crypto/json.ts';
@@ -26,7 +26,11 @@ export function signBlockFactory(
 		}
 
 		const sortedTxsWithHash = pendingTxs.map((tx) => ({
-			hash: getTxHash(tx).toString('hex'),
+			hash: getTxHash({
+				body: tx.body as TxBody,
+				auth_info: tx.auth_info as AuthInfo,
+				signatures: tx.signatures
+			}).toString('hex'),
 			tx: {
 				body: tx.body,
 				auth_info: tx.auth_info,
