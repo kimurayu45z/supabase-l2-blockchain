@@ -1,6 +1,6 @@
 {
   "name": "@supabase-l2-chain/functions",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "MIT",
   "exports": {
     ".": "./mod.ts",
@@ -8,6 +8,7 @@
     "./core/schema": "./core/schema/mod.ts",
     "./types": "./types/mod.ts",
     "./types/crypto": "./types/crypto/mod.ts",
+    "./tools": "./tools/mod.ts",
     "./modules/auth": "./modules/auth/mod.ts",
     "./modules/bank": "./modules/bank/mod.ts",
     "./modules/crypto": "./modules/crypto/mod.ts"

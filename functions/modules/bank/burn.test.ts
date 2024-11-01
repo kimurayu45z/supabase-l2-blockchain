@@ -2,7 +2,7 @@ import { assertEquals } from '@std/assert';
 
 import { createMockDb } from '../../chain.test.ts';
 import { burn } from './burn.ts';
-import { balances } from './schema.ts';
+import { bankSchema, createTableSqlBalances } from './schema.ts';
 
 Deno.test(
 	'burn',
@@ -13,20 +13,12 @@ Deno.test(
 	async () => {
 		const db = await createMockDb(
 			{
-				balances
+				...bankSchema
 			},
-			`
-		CREATE TABLE balances
-		(
-			address TEXT NOT NULL,
-			asset_id TEXT NOT NULL,
-			amount NUMERIC NOT NULL,
-			PRIMARY KEY (address, asset_id)
-		)
-		`
+			createTableSqlBalances
 		);
 
-		await db.insert(balances).values({
+		await db.insert(bankSchema.balances).values({
 			address: 'address',
 			asset_id: 'asset_id',
 			amount: '100'

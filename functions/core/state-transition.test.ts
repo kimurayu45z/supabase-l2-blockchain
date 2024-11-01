@@ -5,6 +5,7 @@ import { Chain } from '../chain.ts';
 import { ModuleRegistry } from '../module-registry.ts';
 import { CryptoModule } from '../modules/crypto/crypto.ts';
 import { coreSchema } from './schema/mod.ts';
+import { createTableSqlTxs } from './schema/txs.ts';
 import { stateTransition } from './state-transition.ts';
 
 Deno.test(
@@ -17,23 +18,7 @@ Deno.test(
 		const chainId = 'test';
 		const chain = new Chain(
 			chainId,
-			await createMockDb(
-				{ ...coreSchema },
-				`
-			CREATE TABLE txs
-			(
-				hash TEXT NOT NULL PRIMARY KEY,
-				created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-				body JSONB NOT NULL,
-				auth_info JSONB NOT NULL,
-				signatures TEXT[] NOT NULL,
-				height INTEGER,
-				success BOOLEAN,
-				inspection_error TEXT,
-				msg_responses JSONB[] NOT NULL
-			);
-			`
-			),
+			await createMockDb({ ...coreSchema }, createTableSqlTxs),
 			new ModuleRegistry(new CryptoModule())
 		);
 

@@ -26,3 +26,32 @@ export const blocks = pgTable('blocks', {
 		.notNull()
 		.references(() => block_headers.height)
 });
+
+export const createTableSqlBlocks = `
+CREATE TABLE block_headers
+(
+	chain_id TEXT NOT NULL,
+	height INTEGER NOT NULL,
+	time TIMESTAMP NOT NULL,
+	last_block_hash TEXT NOT NULL,
+	txs_merkle_root TEXT NOT NULL,
+	PRIMARY KEY (chain_id, height)
+);
+
+CREATE TABLE block_bodies
+(
+	block_hash TEXT NOT NULL PRIMARY KEY,
+	txs JSONB[] NOT NULL,
+	next_signers JSONB[] NOT NULL,
+	signatures TEXT[] NOT NULL
+);
+
+CREATE TABLE blocks
+(
+	hash TEXT NOT NULL PRIMARY KEY,
+	chain_id TEXT NOT NULL,
+	height INTEGER NOT NULL,
+	FOREIGN KEY (hash) REFERENCES block_bodies(block_hash),
+	FOREIGN KEY (chain_id, height) REFERENCES block_headers(chain_id, height)
+);
+`;

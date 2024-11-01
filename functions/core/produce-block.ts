@@ -50,7 +50,6 @@ export async function produceBlock(
 	if (!lastBlockBody) {
 		throw Error("Last block body doesn't exist");
 	}
-	console.log(lastBlockBody);
 
 	// Prepare signers
 	const signersAny = lastBlockBody.next_signers as Any[];
@@ -63,82 +62,74 @@ export async function produceBlock(
 	let block: Block;
 
 	await chain.db.transaction(async (dbTx) => {
-		try {
-			for (const txWithHash of sortedTxsWithHash) {
-				await dbTx.transaction(async (dbTxForOneTx) => {
-					// Must use dbTxForOneTx
-					const txResponse = await stateTransition(chain, dbTxForOneTx, txWithHash.tx);
+		for (const txWithHash of sortedTxsWithHash) {
+			await dbTx.transaction(async (dbTxForOneTx) => {
+				// Must use dbTxForOneTx
+				const txResponse = await stateTransition(chain, dbTxForOneTx, txWithHash.tx);
 
-					txResponses[txWithHash.hash] = txResponse;
+				txResponses[txWithHash.hash] = txResponse;
 
-					// Rollback dbTxForOneTx if the tx is failed
-					if (!txResponse.success) {
-						dbTxForOneTx.rollback();
-					}
+				// Rollback dbTxForOneTx if the tx is failed
+				if (!txResponse.success) {
+					dbTxForOneTx.rollback();
+				}
 
-					// Update tx row with height and response
-					await dbTx
-						.update(tableTxs)
-						.set({
-							height: lastBlock.height + 1,
-							success: txResponse.success,
-							inspection_error: txResponse.inspection_error || null,
-							msg_responses: txResponse.msg_responses
-						})
-						.where(eq(tableTxs.hash, txWithHash.hash));
-				});
-			}
-
-			// Create success txs list
-			const txs: Tx[] = sortedTxsWithHash
-				.filter((txWithHash) => txResponses[txWithHash.hash].success)
-				.map((txWithHash) => txWithHash.tx);
-
-			// Create new block header object
-			const blockHeader = createBlockHeader(
-				chain.id,
-				lastBlock.height,
-				lastBlock.hash,
-				sortedTxsWithHash.map((tx) => tx.tx)
-			);
-			const signBytes = getBlockSignBytes(blockHeader);
-
-			// Create Signatures
-			const signatures = await Promise.all(
-				signers.map(async (signer) => await signHandler(signer, signBytes))
-			);
-
-			// Create new block body object
-			const blockBody: BlockBody = {
-				txs: txs,
-				next_signers: signersAny,
-				signatures: signatures.map((signature) => signature.toString('hex'))
-			};
-
-			// Create block hash
-			const hash = crypto.createHash('sha256').update(signBytes).digest('hex');
-
-			await dbTx.insert(block_headers).values(blockHeader);
-			await dbTx.insert(block_bodies).values({ block_hash: hash, ...blockBody });
-			await dbTx.insert(blocks).values({
-				hash: hash,
-				chain_id: blockHeader.chain_id,
-				height: blockHeader.height
+				// Update tx row with height and response
+				await dbTx
+					.update(tableTxs)
+					.set({
+						height: lastBlock.height + 1,
+						success: txResponse.success,
+						inspection_error: txResponse.inspection_error || null,
+						msg_responses: txResponse.msg_responses
+					})
+					.where(eq(tableTxs.hash, txWithHash.hash));
 			});
-
-			// Create new block object
-			block = {
-				hash: hash,
-				header: blockHeader,
-				body: blockBody
-			};
-		} catch (e) {
-			try {
-				dbTx.rollback();
-				// deno-lint-ignore no-empty
-			} catch {}
-			throw e as Error;
 		}
+
+		// Create success txs list
+		const txs: Tx[] = sortedTxsWithHash
+			.filter((txWithHash) => txResponses[txWithHash.hash].success)
+			.map((txWithHash) => txWithHash.tx);
+
+		// Create new block header object
+		const blockHeader = createBlockHeader(
+			chain.id,
+			lastBlock.height,
+			lastBlock.hash,
+			sortedTxsWithHash.map((tx) => tx.tx)
+		);
+		const signBytes = getBlockSignBytes(blockHeader);
+
+		// Create Signatures
+		const signatures = await Promise.all(
+			signers.map(async (signer) => await signHandler(signer, signBytes))
+		);
+
+		// Create new block body object
+		const blockBody: BlockBody = {
+			txs: txs,
+			next_signers: signersAny,
+			signatures: signatures.map((signature) => signature.toString('hex'))
+		};
+
+		// Create block hash
+		const hash = crypto.createHash('sha256').update(signBytes).digest('hex');
+
+		await dbTx.insert(block_headers).values(blockHeader);
+		await dbTx.insert(block_bodies).values({ block_hash: hash, ...blockBody });
+		await dbTx.insert(blocks).values({
+			hash: hash,
+			chain_id: blockHeader.chain_id,
+			height: blockHeader.height
+		});
+
+		// Create new block object
+		block = {
+			hash: hash,
+			header: blockHeader,
+			body: blockBody
+		};
 	});
 
 	return block!;

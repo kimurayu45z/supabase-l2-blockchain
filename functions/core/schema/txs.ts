@@ -11,3 +11,18 @@ export const txs = pgTable('txs', {
 	inspection_error: text('inspection_error'),
 	msg_responses: jsonb('msg_responses').array()
 });
+
+export const createTableSqlTxs = `
+CREATE TABLE txs
+(
+	hash TEXT NOT NULL PRIMARY KEY,
+	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+	body JSONB NOT NULL,
+	auth_info JSONB NOT NULL,
+	signatures TEXT[] NOT NULL,
+	height INTEGER,
+	success BOOLEAN,
+	inspection_error TEXT,
+	msg_responses JSONB[]
+);
+`;

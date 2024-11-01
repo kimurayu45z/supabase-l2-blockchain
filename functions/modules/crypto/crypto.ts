@@ -1,6 +1,7 @@
 import type { AnyPossibleConstructor, Tx } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import type { Chain } from '../../chain.ts';
 import { PublicKeyEd25519 } from '../../types/crypto/ed25519.ts';
@@ -28,4 +29,17 @@ export class CryptoModule<Schema extends Record<string, unknown>> implements Mod
 		_dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
 		_tx: Tx
 	): Promise<void> {}
+
+	async importGenesis(
+		_dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
+		_state: CryptoState
+	): Promise<void> {}
+
+	// deno-lint-ignore require-await
+	async exportGenesis(_db: PostgresJsDatabase<Schema>): Promise<CryptoState> {
+		return {};
+	}
 }
+
+// deno-lint-ignore ban-types
+export type CryptoState = {};

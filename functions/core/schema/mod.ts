@@ -1,9 +1,6 @@
 import { block_bodies, block_headers, blocks } from './blocks.ts';
 import { txs } from './txs.ts';
 
-export * from './blocks.ts';
-export * from './txs.ts';
-
 export const coreSchema = {
 	block_headers,
 	block_bodies,
