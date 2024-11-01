@@ -7,13 +7,19 @@ import { CryptoModule } from '../modules/crypto/crypto.ts';
 import { coreSchema } from './schema/mod.ts';
 import { stateTransition } from './state-transition.ts';
 
-Deno.test('stateTransition', async () => {
-	const chainId = 'test';
-	const chain = new Chain(
-		chainId,
-		await createMockDb(
-			{ ...coreSchema },
-			`
+Deno.test(
+	'stateTransition',
+	{
+		sanitizeOps: false,
+		sanitizeResources: false
+	},
+	async () => {
+		const chainId = 'test';
+		const chain = new Chain(
+			chainId,
+			await createMockDb(
+				{ ...coreSchema },
+				`
 			CREATE TABLE txs
 			(
 				hash TEXT NOT NULL PRIMARY KEY,
@@ -27,22 +33,23 @@ Deno.test('stateTransition', async () => {
 				msg_responses JSONB[] NOT NULL
 			);
 			`
-		),
-		new ModuleRegistry(new CryptoModule())
-	);
+			),
+			new ModuleRegistry(new CryptoModule())
+		);
 
-	// Empty Tx is allowed if AuthModule is detached
-	const tx: Tx = {
-		body: { msgs: [], memo: '', timeout_timestamp: new Date() },
-		auth_info: {
-			signer_infos: []
-		},
-		signatures: []
-	};
+		// Empty Tx is allowed if AuthModule is detached
+		const tx: Tx = {
+			body: { msgs: [], memo: '', timeout_timestamp: new Date() },
+			auth_info: {
+				signer_infos: []
+			},
+			signatures: []
+		};
 
-	await chain.db.transaction(async (dbTx) => {
-		const txResponse = await stateTransition(chain, dbTx, tx);
+		await chain.db.transaction(async (dbTx) => {
+			const txResponse = await stateTransition(chain, dbTx, tx);
 
-		console.log(txResponse);
-	});
-});
+			console.log(txResponse);
+		});
+	}
+);

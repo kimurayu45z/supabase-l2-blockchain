@@ -16,7 +16,9 @@ export const block_bodies = pgTable('block_bodies', {
 });
 
 export const blocks = pgTable('blocks', {
-	hash: text('hash').primaryKey(),
+	hash: text('hash')
+		.primaryKey()
+		.references(() => block_bodies.block_hash),
 	chain_id: text('chain_id')
 		.notNull()
 		.references(() => block_headers.chain_id),

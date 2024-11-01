@@ -8,13 +8,19 @@ import { createKeyPairEd25519, signEd25519 } from '../types/crypto/ed25519.test.
 import { produceBlock } from './produce-block.ts';
 import { coreSchema } from './schema/mod.ts';
 
-Deno.test('produceBlock', async () => {
-	const chainId = 'test';
-	const chain = new Chain(
-		chainId,
-		await createMockDb(
-			{ ...coreSchema },
-			`
+Deno.test(
+	'produceBlock',
+	{
+		sanitizeOps: false,
+		sanitizeResources: false
+	},
+	async () => {
+		const chainId = 'test';
+		const chain = new Chain(
+			chainId,
+			await createMockDb(
+				{ ...coreSchema },
+				`
 			CREATE TABLE block_headers
 			(
 				chain_id TEXT NOT NULL,
@@ -38,18 +44,39 @@ Deno.test('produceBlock', async () => {
 				hash TEXT NOT NULL PRIMARY KEY,
 				chain_id TEXT NOT NULL,
 				height INTEGER NOT NULL,
+				FOREIGN KEY (hash) REFERENCES block_bodies(block_hash),
 				FOREIGN KEY (chain_id, height) REFERENCES block_headers(chain_id, height)
 			);
 			`
-		),
-		new ModuleRegistry(new CryptoModule())
-	);
+			),
+			new ModuleRegistry(new CryptoModule())
+		);
 
-	const [privateKey, _publicKey] = createKeyPairEd25519(Buffer.from('seed'));
+		const [privateKey, publicKey] = createKeyPairEd25519(Buffer.from('seed'));
 
-	const block = await produceBlock(chain, [], (_, signBytes) =>
-		Promise.resolve(signEd25519(privateKey, signBytes))
-	);
+		await chain.db.insert(coreSchema.block_headers).values({
+			chain_id: chainId,
+			height: 0,
+			time: new Date(),
+			last_block_hash: 'genesis',
+			txs_merkle_root: 'genesis'
+		});
+		await chain.db.insert(coreSchema.block_bodies).values({
+			block_hash: 'genesis',
+			txs: [],
+			next_signers: [chain.moduleRegistry.packAny(publicKey)],
+			signatures: []
+		});
+		await chain.db.insert(coreSchema.blocks).values({
+			hash: 'genesis',
+			chain_id: chainId,
+			height: 0
+		});
 
-	console.log(block);
-});
+		const block = await produceBlock(chain, [], (_, signBytes) =>
+			Promise.resolve(signEd25519(privateKey, signBytes))
+		);
+
+		console.log(block);
+	}
+);

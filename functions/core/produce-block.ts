@@ -50,6 +50,7 @@ export async function produceBlock(
 	if (!lastBlockBody) {
 		throw Error("Last block body doesn't exist");
 	}
+	console.log(lastBlockBody);
 
 	// Prepare signers
 	const signersAny = lastBlockBody.next_signers as Any[];
@@ -117,13 +118,13 @@ export async function produceBlock(
 			// Create block hash
 			const hash = crypto.createHash('sha256').update(signBytes).digest('hex');
 
+			await dbTx.insert(block_headers).values(blockHeader);
+			await dbTx.insert(block_bodies).values({ block_hash: hash, ...blockBody });
 			await dbTx.insert(blocks).values({
 				hash: hash,
 				chain_id: blockHeader.chain_id,
 				height: blockHeader.height
 			});
-			await dbTx.insert(block_headers).values(blockHeader);
-			await dbTx.insert(block_bodies).values({ block_hash: hash, ...blockBody });
 
 			// Create new block object
 			block = {
@@ -132,7 +133,10 @@ export async function produceBlock(
 				body: blockBody
 			};
 		} catch (e) {
-			dbTx.rollback();
+			try {
+				dbTx.rollback();
+				// deno-lint-ignore no-empty
+			} catch {}
 			throw e as Error;
 		}
 	});

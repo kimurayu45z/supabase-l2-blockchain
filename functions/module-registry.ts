@@ -1,8 +1,4 @@
-import type {
-	Any,
-	AnyPossible,
-	AnyPossibleConstructor
-} from '@supabase-l2-blockchain/types/core';
+import type { Any, AnyPossible, AnyPossibleConstructor } from '@supabase-l2-blockchain/types/core';
 
 import type { Module } from './types/module.ts';
 import type { MsgConstructor } from './types/msg.ts';
@@ -20,11 +16,11 @@ export class ModuleRegistry<Schema extends Record<string, unknown>> {
 			this.modules[module.constructor.name()] = module;
 
 			for (const msg of module.msgs()) {
-				this.msgs[`${module.constructor.name()}/${msg.type()}`] = msg;
+				this.msgs[msg.type()] = msg;
 			}
 
 			for (const t of module.constructor.types()) {
-				this.types[`${module.constructor.name()}/${t.type()}`] = t;
+				this.types[t.type()] = t;
 			}
 		}
 	}
