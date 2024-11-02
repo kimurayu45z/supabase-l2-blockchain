@@ -26,11 +26,10 @@ class PrivateKeyEd25519 implements PrivateKey {
 	}
 
 	toAny(): Any {
+		const value = create(PrivateKeyEd25519Schema, { value: this._value });
 		return create(AnySchema, {
-			value: toBinary(
-				PrivateKeyEd25519Schema,
-				create(PrivateKeyEd25519Schema, { value: this._value })
-			)
+			typeUrl: value.$typeName,
+			value: toBinary(PrivateKeyEd25519Schema, value)
 		});
 	}
 
@@ -61,11 +60,10 @@ class PublicKeyEd25519 implements PublicKey {
 	}
 
 	toAny(): Any {
+		const value = create(PublicKeyEd25519Schema, { value: this._value });
 		return create(AnySchema, {
-			value: toBinary(
-				PublicKeyEd25519Schema,
-				create(PublicKeyEd25519Schema, { value: this._value })
-			)
+			typeUrl: value.$typeName,
+			value: toBinary(PublicKeyEd25519Schema, value)
 		});
 	}
 

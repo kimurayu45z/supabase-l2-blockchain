@@ -28,11 +28,10 @@ class PrivateKeySecp256k1 implements PrivateKey {
 	}
 
 	toAny(): Any {
+		const value = create(PrivateKeySecp256k1Schema, { value: this._value });
 		return create(AnySchema, {
-			value: toBinary(
-				PrivateKeySecp256k1Schema,
-				create(PrivateKeySecp256k1Schema, { value: this._value })
-			)
+			typeUrl: value.$typeName,
+			value: toBinary(PrivateKeySecp256k1Schema, value)
 		});
 	}
 
@@ -63,11 +62,10 @@ class PublicKeySecp256k1 implements PublicKey {
 	}
 
 	toAny(): Any {
+		const value = create(PublicKeySecp256k1Schema, { value: this._value });
 		return create(AnySchema, {
-			value: toBinary(
-				PublicKeySecp256k1Schema,
-				create(PublicKeySecp256k1Schema, { value: this._value })
-			)
+			typeUrl: value.$typeName,
+			value: toBinary(PublicKeySecp256k1Schema, value)
 		});
 	}
 
