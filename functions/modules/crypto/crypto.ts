@@ -1,5 +1,10 @@
 import type { AnyPossibleConstructor, Tx } from '@supabase-l2-blockchain/types/core';
-import { PublicKeyEd25519, PublicKeySecp256k1 } from '@supabase-l2-blockchain/types/modules/crypto';
+import {
+	PrivateKeyEd25519,
+	PrivateKeySecp256k1,
+	PublicKeyEd25519,
+	PublicKeySecp256k1
+} from '@supabase-l2-blockchain/types/modules/crypto';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
@@ -15,7 +20,7 @@ export class CryptoModule<Schema extends Record<string, unknown>> implements Mod
 	}
 
 	static types(): AnyPossibleConstructor[] {
-		return [PublicKeyEd25519, PublicKeySecp256k1];
+		return [PrivateKeyEd25519, PrivateKeySecp256k1, PublicKeyEd25519, PublicKeySecp256k1];
 	}
 
 	async inspector(

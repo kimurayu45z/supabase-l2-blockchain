@@ -141,7 +141,9 @@ export async function produceBlock(
 		const hash = crypto.createHash('sha256').update(signBytes).digest();
 
 		await dbTx.insert(block_headers).values(convertBlockHeader(blockHeader));
-		await dbTx.insert(block_bodies).values(convertBlockBody(hash, blockBody));
+		await dbTx
+			.insert(block_bodies)
+			.values(convertBlockBody(hash, blockBody, chain.moduleRegistry.protobufRegistry));
 		await dbTx.insert(blocks).values(convertBlock(hash, blockHeader));
 
 		// Create new block object

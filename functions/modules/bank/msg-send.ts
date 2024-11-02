@@ -13,7 +13,7 @@ import type { Msg, MsgConstructor } from '../../types/msg.ts';
 import type { BankSchema } from './schema.ts';
 import { send } from './send.ts';
 
-class msgSend<Schema extends BankSchema> implements Msg<Schema> {
+class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 	constructor(public value: Omit<ProtoMsgSend, keyof Message>) {}
 
 	static type(): string {
@@ -43,8 +43,9 @@ class msgSend<Schema extends BankSchema> implements Msg<Schema> {
 	}
 
 	static fromAny(value: Any): Msg {
-		return new msgSend<BankSchema>(fromBinary(MsgSendSchema, value.value));
+		return new MsgSend<BankSchema>(fromBinary(MsgSendSchema, value.value));
 	}
 }
 
-export const MsgSend: MsgConstructor = msgSend;
+const msgSend: MsgConstructor = MsgSend;
+export { msgSend as MsgSend };

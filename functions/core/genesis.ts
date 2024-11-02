@@ -1,7 +1,6 @@
 import { Buffer } from 'node:buffer';
 
-import { toJson } from '@bufbuild/protobuf';
-import { AnySchema, type AnyJson } from '@bufbuild/protobuf/wkt';
+import { type AnyJson } from '@bufbuild/protobuf/wkt';
 import type { PublicKey } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
@@ -100,7 +99,7 @@ export async function insertGenesisBlock<Schema extends CoreSchema>(
 	await dbTx.insert(coreSchema.block_bodies).values({
 		block_hash: hash,
 		txs: [],
-		next_signers: signers.map((publicKey) => toJson(AnySchema, publicKey.toAny())),
+		next_signers: signers.map((publicKey) => chain.moduleRegistry.toJson(publicKey.toAny())),
 		signatures: []
 	});
 	await dbTx.insert(coreSchema.blocks).values({

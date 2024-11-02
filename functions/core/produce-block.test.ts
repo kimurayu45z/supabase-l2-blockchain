@@ -27,14 +27,12 @@ Deno.test(
 		);
 
 		const privateKey = new PrivateKeyEd25519(crypto.randomBytes(32));
-		const publicKey = new PublicKeyEd25519(privateKey.publicKey());
+		const publicKey = new PublicKeyEd25519(await privateKey.publicKey());
 
 		await chain.db.transaction(async (dbTx) => {
 			await insertGenesisBlock(chain, dbTx, Buffer.from('genesis'), [publicKey]);
 		});
-		const block = await produceBlock(chain, [], (_, signBytes) =>
-			Promise.resolve(privateKey.sign(signBytes))
-		);
+		const block = await produceBlock(chain, [], (_, signBytes) => privateKey.sign(signBytes));
 
 		console.log(block);
 	}

@@ -1,6 +1,8 @@
 import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
+import { toJson } from '@bufbuild/protobuf';
+import { AnySchema } from '@bufbuild/protobuf/wkt';
 import { PrivateKeyEd25519, PublicKeyEd25519 } from '@supabase-l2-blockchain/types/modules/crypto';
 
 import { createMockDb } from '../../chain.test.ts';
@@ -28,7 +30,7 @@ Deno.test(
 		);
 
 		const privateKey = new PrivateKeyEd25519(crypto.randomBytes(32));
-		const publicKey = new PublicKeyEd25519(privateKey.publicKey());
+		const publicKey = new PublicKeyEd25519(await privateKey.publicKey());
 
 		await chain.db.transaction(async (dbTx) => {
 			await insertGenesisBlock(chain, dbTx, Buffer.from('genesis'), [publicKey]);
@@ -36,7 +38,7 @@ Deno.test(
 
 		const blockBytes = await signBlock(
 			chain,
-			(_signer, signBytes) => Promise.resolve(privateKey.sign(signBytes)),
+			(_signer, signBytes) => privateKey.sign(signBytes),
 			async (_) => {}
 		);
 		console.log(blockBytes.toString());

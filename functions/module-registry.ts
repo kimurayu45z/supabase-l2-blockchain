@@ -1,5 +1,12 @@
-import { createRegistry, fromJson, type Registry } from '@bufbuild/protobuf';
-import { AnySchema, type Any, type AnyJson } from '@bufbuild/protobuf/wkt';
+import {
+	createRegistry,
+	fromJson,
+	toJson,
+	type JsonValue,
+	type Message,
+	type Registry
+} from '@bufbuild/protobuf';
+import { AnySchema, TimestampSchema, type Any, type AnyJson } from '@bufbuild/protobuf/wkt';
 import type { AnyPossible, AnyPossibleConstructor } from '@supabase-l2-blockchain/types/core';
 
 import type { Module } from './types/module.ts';
@@ -22,12 +29,14 @@ export class ModuleRegistry<Schema extends Record<string, unknown>> {
 		}
 
 		this.protobufRegistry = createRegistry(
+			AnySchema,
+			TimestampSchema,
 			...modules.flatMap((module) => module.constructor.types().map((type) => type.desc()))
 		);
 	}
 
 	extractAny<T extends AnyPossible>(value: Any): T {
-		const type = this.types[value.typeUrl];
+		const type = this.types[value.typeUrl.split('/').pop()!];
 		if (!type) {
 			throw Error(`Unknown type: ${value.typeUrl}`);
 		}
@@ -35,7 +44,16 @@ export class ModuleRegistry<Schema extends Record<string, unknown>> {
 	}
 
 	extractAnyJson<T extends AnyPossible>(value: AnyJson): T {
-		const protoAny = fromJson(AnySchema, value);
+		const protoAny = fromJson(AnySchema, value, { registry: this.protobufRegistry });
+
 		return this.extractAny<T>(protoAny);
+	}
+
+	toJson(value: Message): JsonValue {
+		const desc = this.protobufRegistry.getMessage(value.$typeName);
+		if (!desc) {
+			throw Error(`Unknown type: ${value.$typeName}`);
+		}
+		return toJson(desc, value, { registry: this.protobufRegistry });
 	}
 }

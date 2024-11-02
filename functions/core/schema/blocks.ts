@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer';
 
-import { toJson } from '@bufbuild/protobuf';
+import { toJson, type Registry } from '@bufbuild/protobuf';
+import { AnySchema, type Any } from '@bufbuild/protobuf/wkt';
 import { TxsSchema, type BlockBody, type BlockHeader } from '@supabase-l2-blockchain/types/core';
 import type { InferInsertModel } from 'drizzle-orm';
 import { integer, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
@@ -77,13 +78,18 @@ export function convertBlockHeader(
 
 export function convertBlockBody(
 	hash: Buffer,
-	blockBody: BlockBody
+	blockBody: BlockBody,
+	protobufRegistry: Registry
 ): InferInsertModel<typeof block_bodies> {
 	return {
 		block_hash: hash.toString('hex'),
 		txs: blockBody.txs ? toJson(TxsSchema, blockBody.txs) : {},
-		next_signers: blockBody.nextSigners,
-		signatures: blockBody.signatures.map((signature) => Buffer.from(signature).toString('hex'))
+		next_signers: blockBody.nextSigners.map((signerAny: Any) =>
+			toJson(AnySchema, signerAny, { registry: protobufRegistry })
+		),
+		signatures: blockBody.signatures.map((signature: Uint8Array) =>
+			Buffer.from(signature).toString('hex')
+		)
 	};
 }
 
