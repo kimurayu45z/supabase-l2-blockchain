@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package supabase_l2_blockchain.core.v1;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+message TxBody {
+    repeated google.protobuf.Any msgs = 1;
+    string memo = 2;
+    google.protobuf.Timestamp timeout_timestamp = 3;
+}
+
+message SignerInfo {
+    google.protobuf.Any public_key = 1;
+    int64 sequence = 2;
+}
+
+message AuthInfo {
+    repeated SignerInfo signer_infos = 1;
+}
+
+message Tx {
+    TxBody body = 1;
+    AuthInfo auth_info = 2;
+    repeated bytes signatures = 3;
+}
+
+message TxSignDoc {
+    TxBody body = 1;
+    string chain_id = 2;
+    int64 sequence = 3;
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package supabase_l2_blockchain.modules.bank.v1;
+
+import "core/asset.proto";
+
+message MsgSend {
+    string from_address = 1;
+    string to_address = 2;
+    repeated supabase_l2_blockchain.core.v1.Asset assets = 3;
+}

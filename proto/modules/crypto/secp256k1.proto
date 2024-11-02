@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package supabase_l2_blockchain.modules.crypto.v1;
+
+message PrivateKeySecp256k1 {
+    bytes value = 1;
+}
+
+message PublicKeySecp256k1 {
+    bytes value = 1;
+}
