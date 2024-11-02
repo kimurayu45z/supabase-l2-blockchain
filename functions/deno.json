@@ -7,7 +7,6 @@
     "./core/endpoints": "./core/endpoints/mod.ts",
     "./core/schema": "./core/schema/mod.ts",
     "./types": "./types/mod.ts",
-    "./types/crypto": "./types/crypto/mod.ts",
     "./tools": "./tools/mod.ts",
     "./modules/auth": "./modules/auth/mod.ts",
     "./modules/bank": "./modules/bank/mod.ts",
