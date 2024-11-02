@@ -1,15 +1,10 @@
 import * as crypto from 'crypto';
 
-import {
-	create,
-	DescMessage,
-	MessageInitShape,
-	Registry,
-	toBinary,
-	toJsonString
-} from '@bufbuild/protobuf';
-import { AnySchema, TimestampSchema } from '@bufbuild/protobuf/wkt';
+import { create, Registry, toBinary, toJsonString } from '@bufbuild/protobuf';
+import { TimestampSchema } from '@bufbuild/protobuf/wkt';
 
+import { AnyPossible } from './any-possible';
+import { PublicKey } from './public-key';
 import {
 	AuthInfo,
 	AuthInfoSchema,
@@ -21,18 +16,23 @@ import {
 	TxSignDocSchema
 } from './tx_pb';
 
-export function createTxBody<T extends DescMessage>(
-	msgs: [T, MessageInitShape<T>][],
-	memo: string,
-	timeoutTimestamp: Date
-): TxBody {
+export type MsgResponse =
+	| {
+			success: unknown;
+	  }
+	| {
+			error: string;
+	  };
+
+export type TxResponse = {
+	success: boolean;
+	inspection_error?: string;
+	msg_responses: MsgResponse[];
+};
+
+export function createTxBody(msgs: AnyPossible[], memo: string, timeoutTimestamp: Date): TxBody {
 	return create(TxBodySchema, {
-		msgs: msgs.map((msg) =>
-			create(AnySchema, {
-				typeUrl: msg[0].typeName,
-				value: toBinary(msg[0], create(msg[0], msg[1]))
-			})
-		),
+		msgs: msgs.map((msg) => msg.toAny()),
 		memo,
 		timeoutTimestamp: create(TimestampSchema, {
 			seconds: BigInt(Math.floor(timeoutTimestamp.getTime() / 1000)),
@@ -60,19 +60,13 @@ export function getTxSignBytes(
 	return Buffer.from(json);
 }
 
-export function createAuthInfo<T extends DescMessage>(
-	signerInfos: { publicKey: [T, MessageInitShape<T>]; sequence: bigint }[]
+export function createAuthInfo(
+	signerInfos: { publicKey: PublicKey; sequence: bigint }[]
 ): AuthInfo {
 	return create(AuthInfoSchema, {
 		signerInfos: signerInfos.map((signerInfo) =>
 			create(SignerInfoSchema, {
-				publicKey: create(AnySchema, {
-					typeUrl: signerInfo.publicKey[0].typeName,
-					value: toBinary(
-						signerInfo.publicKey[0],
-						create(signerInfo.publicKey[0], signerInfo.publicKey[1])
-					)
-				}),
+				publicKey: signerInfo.publicKey.toAny(),
 				sequence: signerInfo.sequence
 			})
 		)

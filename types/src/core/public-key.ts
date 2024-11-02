@@ -1,7 +1,6 @@
-import { Any } from '@bufbuild/protobuf/wkt';
+import { AnyPossible } from './any-possible';
 
-export interface PublicKey {
+export interface PublicKey extends AnyPossible {
 	value(): Uint8Array;
 	verify(msg: Uint8Array, signature: Uint8Array): boolean;
-	toAny(): Any;
 }
