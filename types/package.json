@@ -1,6 +1,6 @@
 {
   "name": "@supabase-l2-blockchain/types",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
     "./core": "./core/index.ts",
     "./modules/auth": "./modules/auth/index.ts",

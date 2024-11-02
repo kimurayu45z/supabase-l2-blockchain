@@ -1,3 +1,5 @@
+import * as crypto from 'crypto';
+
 import {
 	create,
 	DescMessage,
@@ -83,4 +85,11 @@ export function createTx(txBody: TxBody, authInfo: AuthInfo, signatures: Uint8Ar
 		authInfo: authInfo,
 		signatures: signatures
 	});
+}
+
+export function getTxHash(tx: Tx): Buffer {
+	const bytes = toBinary(TxSchema, tx);
+	const hash = crypto.createHash('sha256').update(bytes).digest();
+
+	return hash;
 }
