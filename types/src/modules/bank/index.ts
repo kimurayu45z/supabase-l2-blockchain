@@ -1,2 +1,2 @@
-export * from './balance.ts';
-export * from './msgs_pb.ts';
+export * from './balance';
+export * from './msgs_pb';

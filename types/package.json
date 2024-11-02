@@ -1,14 +1,14 @@
 {
   "name": "@supabase-l2-blockchain/types",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "files": [
     "dist"
   ],
   "exports": {
-    "./core": "./dist/core/index.ts",
-    "./modules/auth": "./dist/modules/auth/index.ts",
-    "./modules/bank": "./dist/modules/bank/index.ts",
-    "./modules/crypto": "./dist/modules/crypto/index.ts"
+    "./core": "./dist/core/index.js",
+    "./modules/auth": "./dist/modules/auth/index.js",
+    "./modules/bank": "./dist/modules/bank/index.js",
+    "./modules/crypto": "./dist/modules/crypto/index.js"
   },
   "scripts": {
     "test": "jest",

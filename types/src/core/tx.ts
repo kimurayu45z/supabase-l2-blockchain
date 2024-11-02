@@ -19,7 +19,7 @@ import {
 	TxBodySchema,
 	TxSchema,
 	TxSignDocSchema
-} from './tx_pb.ts';
+} from './tx_pb';
 
 export function createTxBody<T extends DescMessage>(
 	msgs: [T, MessageInitShape<T>][],

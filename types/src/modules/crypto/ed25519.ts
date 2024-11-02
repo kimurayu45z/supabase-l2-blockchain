@@ -2,9 +2,9 @@ import { create, toBinary } from '@bufbuild/protobuf';
 import { Any, AnySchema } from '@bufbuild/protobuf/wkt';
 import * as ed from '@noble/ed25519';
 
-import { PrivateKey } from '../../core/private-key.ts';
+import { PrivateKey } from '../../core/private-key';
 import { PublicKey } from '../../core/public-key';
-import { PrivateKeyEd25519Schema, PublicKeyEd25519Schema } from './ed25519_pb.ts';
+import { PrivateKeyEd25519Schema, PublicKeyEd25519Schema } from './ed25519_pb';
 
 export class PrivateKeyEd25519 implements PrivateKey {
 	private _value: Uint8Array;

@@ -1,2 +1,2 @@
-export * from './ed25519.ts';
-export * from './secp256k1.ts';
+export * from './ed25519';
+export * from './secp256k1';
