@@ -1,14 +1,18 @@
 {
   "name": "@supabase-l2-blockchain/types",
   "version": "0.1.5",
+  "files": [
+    "dist"
+  ],
   "exports": {
-    "./core": "./core/index.ts",
-    "./modules/auth": "./modules/auth/index.ts",
-    "./modules/bank": "./modules/bank/index.ts",
-    "./modules/crypto": "./modules/crypto/index.ts"
+    "./core": "./dist/core/index.ts",
+    "./modules/auth": "./dist/modules/auth/index.ts",
+    "./modules/bank": "./dist/modules/bank/index.ts",
+    "./modules/crypto": "./dist/modules/crypto/index.ts"
   },
   "scripts": {
     "test": "jest",
+    "build": "tsc --build --clean && tsc --build",
     "generate": "cd .. && buf generate"
   },
   "author": "KIMURA Yu",

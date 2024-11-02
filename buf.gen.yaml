@@ -2,4 +2,4 @@ version: v2
 plugins:
   - local: protoc-gen-es
     opt: target=ts
-    out: types/
+    out: types/src
