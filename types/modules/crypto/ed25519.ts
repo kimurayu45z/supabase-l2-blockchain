@@ -20,6 +20,10 @@ export class PrivateKeyEd25519 implements PrivateKey {
 		return ed.sign(msg, this._value);
 	}
 
+	publicKey(): Uint8Array {
+		return ed.getPublicKey(this._value);
+	}
+
 	toAny(): Any {
 		return create(AnySchema, {
 			value: toBinary(

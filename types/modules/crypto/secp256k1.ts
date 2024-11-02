@@ -20,6 +20,10 @@ export class PrivateKeySecp256k1 implements PrivateKey {
 		return secp.sign(msg, this._value).toCompactRawBytes();
 	}
 
+	publicKey(): Uint8Array {
+		return secp.getPublicKey(this._value);
+	}
+
 	toAny(): Any {
 		return create(AnySchema, {
 			value: toBinary(
