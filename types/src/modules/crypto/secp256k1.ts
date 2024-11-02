@@ -7,7 +7,7 @@ import { PrivateKey } from '../../core/private-key';
 import { PublicKey } from '../../core/public-key';
 import { PrivateKeySecp256k1Schema, PublicKeySecp256k1Schema } from './secp256k1_pb';
 
-class privateKeySecp256k1 implements PrivateKey {
+class PrivateKeySecp256k1 implements PrivateKey {
 	private _value: Uint8Array;
 	constructor(value: Uint8Array) {
 		this._value = value;
@@ -40,14 +40,15 @@ class privateKeySecp256k1 implements PrivateKey {
 		return PrivateKeySecp256k1Schema;
 	}
 
-	static fromAny(value: Any): privateKeySecp256k1 {
+	static fromAny(value: Any): PrivateKeySecp256k1 {
 		return new PrivateKeySecp256k1(fromBinary(PrivateKeySecp256k1Schema, value.value).value);
 	}
 }
 
-export const PrivateKeySecp256k1: AnyPossibleConstructor<privateKeySecp256k1> = privateKeySecp256k1;
+const privateKeySecp256k1: AnyPossibleConstructor<PrivateKeySecp256k1> = PrivateKeySecp256k1;
+export { privateKeySecp256k1 as PrivateKeySecp256k1 };
 
-class publicKeySecp256k1 implements PublicKey {
+class PublicKeySecp256k1 implements PublicKey {
 	private _value: Uint8Array;
 	constructor(value: Uint8Array) {
 		this._value = value;
@@ -74,9 +75,10 @@ class publicKeySecp256k1 implements PublicKey {
 		return PublicKeySecp256k1Schema;
 	}
 
-	static fromAny(value: Any): publicKeySecp256k1 {
+	static fromAny(value: Any): PublicKeySecp256k1 {
 		return new PublicKeySecp256k1(fromBinary(PublicKeySecp256k1Schema, value.value).value);
 	}
 }
 
-export const PublicKeySecp256k1: AnyPossibleConstructor<publicKeySecp256k1> = publicKeySecp256k1;
+const publicKeySecp256k1: AnyPossibleConstructor<PublicKeySecp256k1> = PublicKeySecp256k1;
+export { publicKeySecp256k1 as PublicKeySecp256k1 };
