@@ -3,8 +3,8 @@ import { Any, AnySchema } from '@bufbuild/protobuf/wkt';
 import * as ed from '@noble/ed25519';
 
 import { AnyPossibleConstructor } from '../../core/any-possible';
-import { PrivateKey } from '../../core/private-key';
-import { PublicKey } from '../../core/public-key';
+import { PrivateKey, PrivateKeyConstructor } from '../../core/private-key';
+import { PublicKey, PublicKeyConstructor } from '../../core/public-key';
 import { PrivateKeyEd25519Schema, PublicKeyEd25519Schema } from './ed25519_pb';
 
 class PrivateKeyEd25519 implements PrivateKey {
@@ -39,11 +39,11 @@ class PrivateKeyEd25519 implements PrivateKey {
 	}
 
 	static fromAny(value: Any): PrivateKeyEd25519 {
-		return new privateKeyEd25519(fromBinary(PrivateKeyEd25519Schema, value.value).value);
+		return new PrivateKeyEd25519(fromBinary(PrivateKeyEd25519Schema, value.value).value);
 	}
 }
 
-const privateKeyEd25519: AnyPossibleConstructor<PrivateKeyEd25519> = PrivateKeyEd25519;
+const privateKeyEd25519: PrivateKeyConstructor<PrivateKeyEd25519> = PrivateKeyEd25519;
 export { privateKeyEd25519 as PrivateKeyEd25519 };
 
 class PublicKeyEd25519 implements PublicKey {
@@ -78,5 +78,5 @@ class PublicKeyEd25519 implements PublicKey {
 	}
 }
 
-const publicKeyEd25519: AnyPossibleConstructor<PublicKeyEd25519> = PublicKeyEd25519;
+const publicKeyEd25519: PublicKeyConstructor<PublicKeyEd25519> = PublicKeyEd25519;
 export { publicKeyEd25519 as PublicKeyEd25519 };

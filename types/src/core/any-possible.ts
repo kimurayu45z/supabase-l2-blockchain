@@ -6,7 +6,6 @@ export interface AnyPossible {
 }
 
 export interface AnyPossibleConstructor<T extends AnyPossible = AnyPossible> {
-	new (...args: any[]): T;
 	desc(): DescMessage;
 	fromAny(value: Any): T;
 }

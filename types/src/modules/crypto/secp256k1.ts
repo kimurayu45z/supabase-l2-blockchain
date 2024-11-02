@@ -3,8 +3,8 @@ import { Any, AnySchema } from '@bufbuild/protobuf/wkt';
 import * as secp from '@noble/secp256k1';
 
 import { AnyPossibleConstructor } from '../../core/any-possible';
-import { PrivateKey } from '../../core/private-key';
-import { PublicKey } from '../../core/public-key';
+import { PrivateKey, PrivateKeyConstructor } from '../../core/private-key';
+import { PublicKey, PublicKeyConstructor } from '../../core/public-key';
 import { PrivateKeySecp256k1Schema, PublicKeySecp256k1Schema } from './secp256k1_pb';
 
 class PrivateKeySecp256k1 implements PrivateKey {
@@ -45,7 +45,7 @@ class PrivateKeySecp256k1 implements PrivateKey {
 	}
 }
 
-const privateKeySecp256k1: AnyPossibleConstructor<PrivateKeySecp256k1> = PrivateKeySecp256k1;
+const privateKeySecp256k1: PrivateKeyConstructor<PrivateKeySecp256k1> = PrivateKeySecp256k1;
 export { privateKeySecp256k1 as PrivateKeySecp256k1 };
 
 class PublicKeySecp256k1 implements PublicKey {
@@ -80,5 +80,5 @@ class PublicKeySecp256k1 implements PublicKey {
 	}
 }
 
-const publicKeySecp256k1: AnyPossibleConstructor<PublicKeySecp256k1> = PublicKeySecp256k1;
+const publicKeySecp256k1: PublicKeyConstructor<PublicKeySecp256k1> = PublicKeySecp256k1;
 export { publicKeySecp256k1 as PublicKeySecp256k1 };
