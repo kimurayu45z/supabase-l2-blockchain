@@ -16,7 +16,7 @@ export async function burn(
 			})
 			.then((balance) => BigInt(balance?.amount || 0));
 
-		const balanceAfter = balance - asset.amount;
+		const balanceAfter = balance - BigInt(asset.amount);
 		if (balanceAfter < 0) {
 			throw Error(`Insufficient balance of address ${address}: ${balance} ${asset.id}`);
 		}

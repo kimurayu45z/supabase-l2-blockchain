@@ -1,9 +1,9 @@
-import type { Tx } from '@supabase-l2-blockchain/types';
-import type { MsgResponse, TxResponse } from '@supabase-l2-blockchain/types/core';
+import type { MsgResponse, Tx, TxResponse } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
 import type { Chain } from '../chain.ts';
+import type { Msg } from '../types/msg.ts';
 
 /**
  *
@@ -32,13 +32,9 @@ export async function stateTransition<Schema extends Record<string, unknown>>(
 
 	const msgResponses: MsgResponse[] = [];
 
-	for (const msg of tx.body.msgs) {
+	for (const msg of tx.body?.msgs || []) {
 		try {
-			const MsgConstructor = chain.moduleRegistry.msgs[msg.type];
-			if (!MsgConstructor) {
-				throw new Error(`Unknown message type: ${msg.type}`);
-			}
-			const msgInstance = new MsgConstructor(msg.value);
+			const msgInstance = chain.moduleRegistry.extractAny<Msg<Schema>>(msg);
 			const success = await msgInstance.stateTransitionFunction(dbTx);
 			msgResponses.push({ success: success });
 		} catch (e) {

@@ -1,11 +1,9 @@
-import type { AnyPossibleConstructor } from '@supabase-l2-blockchain/types/core';
+import type { AnyPossible, AnyPossibleConstructor } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-export interface Msg<Schema extends Record<string, unknown>> {
-	constructor: MsgConstructor<Schema>;
-	value: unknown;
-
+export interface Msg<Schema extends Record<string, unknown> = Record<string, unknown>>
+	extends AnyPossible {
 	signers(): string[];
 
 	stateTransitionFunction(
@@ -13,6 +11,4 @@ export interface Msg<Schema extends Record<string, unknown>> {
 	): Promise<unknown>;
 }
 
-export type MsgConstructor<Schema extends Record<string, unknown>> = AnyPossibleConstructor<
-	Msg<Schema>
->;
+export type MsgConstructor = AnyPossibleConstructor<Msg>;

@@ -1,29 +1,50 @@
-import type { Asset } from '@supabase-l2-blockchain/types/core';
+import type { Message } from '@bufbuild/protobuf';
+import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
+import type { Any } from '@bufbuild/protobuf/wkt';
+import { AnySchema } from '@bufbuild/protobuf/wkt';
+import {
+	MsgSendSchema,
+	type MsgSend as ProtoMsgSend
+} from '@supabase-l2-blockchain/types/modules/bank';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
-import type { Msg } from '../../types/msg.ts';
+import type { Msg, MsgConstructor } from '../../types/msg.ts';
 import type { BankSchema } from './schema.ts';
 import { send } from './send.ts';
 
-export class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
-	['constructor']: typeof MsgSend<Schema> = MsgSend<Schema>;
-
-	constructor(public value: { from_address: string; to_address: string; assets: Asset[] }) {}
+class msgSend<Schema extends BankSchema> implements Msg<Schema> {
+	constructor(public value: Omit<ProtoMsgSend, keyof Message>) {}
 
 	static type(): string {
 		return 'MsgSend';
 	}
 
 	signers(): string[] {
-		return [this.value.from_address];
+		return [this.value.fromAddress];
 	}
 
 	async stateTransitionFunction(
 		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>
 	): Promise<unknown> {
-		await send(dbTx as any, this.value.from_address, this.value.to_address, this.value.assets);
+		await send(dbTx as any, this.value.fromAddress, this.value.toAddress, this.value.assets);
 
 		return {};
 	}
+
+	toAny(): Any {
+		return create(AnySchema, {
+			value: toBinary(MsgSendSchema, create(MsgSendSchema, this.value))
+		});
+	}
+
+	static desc() {
+		return MsgSendSchema;
+	}
+
+	static fromAny(value: Any): Msg {
+		return new msgSend<BankSchema>(fromBinary(MsgSendSchema, value.value));
+	}
 }
+
+export const MsgSend: MsgConstructor = msgSend;

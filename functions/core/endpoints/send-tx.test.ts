@@ -1,4 +1,4 @@
-import type { Tx } from '@supabase-l2-blockchain/types/core';
+import { createAuthInfo, createTx, createTxBody } from '@supabase-l2-blockchain/types/core';
 
 import { createMockDb } from '../../chain.test.ts';
 import { Chain } from '../../chain.ts';
@@ -23,13 +23,7 @@ Deno.test(
 		);
 
 		// Empty Tx is allowed if AuthModule is detached
-		const tx: Tx = {
-			body: { msgs: [], memo: '', timeout_timestamp: new Date() },
-			auth_info: {
-				signer_infos: []
-			},
-			signatures: []
-		};
+		const tx = createTx(createTxBody([], '', new Date()), createAuthInfo([]), []);
 
 		const hash = await sendTx(chain, tx);
 		console.log(hash);

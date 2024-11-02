@@ -17,12 +17,14 @@ class privateKeySecp256k1 implements PrivateKey {
 		return this._value;
 	}
 
-	sign(msg: Uint8Array): Uint8Array {
-		return secp.sign(msg, this._value).toCompactRawBytes();
+	async sign(msg: Uint8Array): Promise<Uint8Array> {
+		const sig = await secp.signAsync(msg, this._value);
+
+		return sig.toCompactRawBytes();
 	}
 
-	publicKey(): Uint8Array {
-		return secp.getPublicKey(this._value);
+	publicKey(): Promise<Uint8Array> {
+		return Promise.resolve(secp.getPublicKey(this._value));
 	}
 
 	toAny(): Any {
@@ -55,8 +57,8 @@ class publicKeySecp256k1 implements PublicKey {
 		return this._value;
 	}
 
-	verify(signature: Uint8Array, msg: Uint8Array): boolean {
-		return secp.verify(signature, msg, this._value);
+	verify(signature: Uint8Array, msg: Uint8Array): Promise<boolean> {
+		return Promise.resolve(secp.verify(signature, msg, this._value));
 	}
 
 	toAny(): Any {

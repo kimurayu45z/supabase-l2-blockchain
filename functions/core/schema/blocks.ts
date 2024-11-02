@@ -1,3 +1,8 @@
+import { Buffer } from 'node:buffer';
+
+import { toJson } from '@bufbuild/protobuf';
+import { TxsSchema, type BlockBody, type BlockHeader } from '@supabase-l2-blockchain/types/core';
+import type { InferInsertModel } from 'drizzle-orm';
 import { integer, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const block_headers = pgTable('block_headers', {
@@ -10,7 +15,7 @@ export const block_headers = pgTable('block_headers', {
 
 export const block_bodies = pgTable('block_bodies', {
 	block_hash: text('block_hash').primaryKey(),
-	txs: jsonb('txs').array().notNull(),
+	txs: jsonb('txs').notNull(),
 	next_signers: jsonb('next_signers').array().notNull(),
 	signatures: text('signatures').array().notNull()
 });
@@ -41,7 +46,7 @@ CREATE TABLE block_headers
 CREATE TABLE block_bodies
 (
 	block_hash TEXT NOT NULL PRIMARY KEY,
-	txs JSONB[] NOT NULL,
+	txs JSONB NOT NULL,
 	next_signers JSONB[] NOT NULL,
 	signatures TEXT[] NOT NULL
 );
@@ -55,3 +60,40 @@ CREATE TABLE blocks
 	FOREIGN KEY (chain_id, height) REFERENCES block_headers(chain_id, height)
 );
 `;
+
+export function convertBlockHeader(
+	blockHeader: BlockHeader
+): InferInsertModel<typeof block_headers> {
+	return {
+		chain_id: blockHeader.chainId,
+		height: Number(blockHeader.height),
+		time: new Date(
+			Number(blockHeader.time?.seconds || 0) * 1000 + Number(blockHeader.time?.nanos || 0) / 1000000
+		),
+		last_block_hash: Buffer.from(blockHeader.lastBlockHash).toString('hex'),
+		txs_merkle_root: Buffer.from(blockHeader.txsMerkleRoot).toString('hex')
+	};
+}
+
+export function convertBlockBody(
+	hash: Buffer,
+	blockBody: BlockBody
+): InferInsertModel<typeof block_bodies> {
+	return {
+		block_hash: hash.toString('hex'),
+		txs: blockBody.txs ? toJson(TxsSchema, blockBody.txs) : {},
+		next_signers: blockBody.nextSigners,
+		signatures: blockBody.signatures.map((signature) => Buffer.from(signature).toString('hex'))
+	};
+}
+
+export function convertBlock(
+	hash: Buffer,
+	blockHeader: BlockHeader
+): InferInsertModel<typeof blocks> {
+	return {
+		hash: hash.toString('hex'),
+		chain_id: blockHeader.chainId,
+		height: Number(blockHeader.height)
+	};
+}

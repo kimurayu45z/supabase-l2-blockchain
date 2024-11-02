@@ -1,22 +1,34 @@
-import type { Buffer } from 'node:buffer';
+import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
-import type {
-	Any,
-	Block,
-	BlockBody,
-	BlockHeader,
-	Tx,
-	TxResponse
+import { create, toBinary } from '@bufbuild/protobuf';
+import type { AnyJson } from '@bufbuild/protobuf/wkt';
+import {
+	createBlock,
+	createBlockBody,
+	createBlockHeader,
+	getBlockSignBytes,
+	TxSchema,
+	TxsSchema,
+	type Block,
+	type BlockHeader,
+	type PublicKey,
+	type Tx,
+	type TxResponse,
+	type Txs
 } from '@supabase-l2-blockchain/types/core';
 import { eq } from 'drizzle-orm';
 import { MerkleTree } from 'merkletreejs';
 
 import type { Chain } from '../chain.ts';
-import { getBlockSignBytes } from '../types/block.ts';
-import type { PublicKey } from '../types/crypto/public-key.ts';
-import { getTxBytes } from '../types/tx.ts';
-import { block_bodies, block_headers, blocks } from './schema/blocks.ts';
+import {
+	block_bodies,
+	block_headers,
+	blocks,
+	convertBlock,
+	convertBlockBody,
+	convertBlockHeader
+} from './schema/blocks.ts';
 import type { CoreSchema } from './schema/mod.ts';
 import { txs as tableTxs } from './schema/txs.ts';
 import { stateTransition } from './state-transition.ts';
@@ -31,7 +43,7 @@ import { stateTransition } from './state-transition.ts';
 export async function produceBlock(
 	chain: Chain<CoreSchema>,
 	sortedTxsWithHash: { hash: string; tx: Tx }[],
-	signHandler: (signer: PublicKey, signBytes: Buffer) => Promise<Buffer>
+	signHandler: (signer: PublicKey, signBytes: Uint8Array) => Promise<Uint8Array>
 ): Promise<Block> {
 	// Get last block info
 	const lastBlock = await chain.db.query.blocks.findFirst({
@@ -52,9 +64,9 @@ export async function produceBlock(
 	}
 
 	// Prepare signers
-	const signersAny = lastBlockBody.next_signers as Any[];
+	const signersAny = lastBlockBody.next_signers as AnyJson[];
 	const signers = signersAny.map((signerAny) =>
-		chain.moduleRegistry.extractAny<PublicKey>(signerAny)
+		chain.moduleRegistry.extractAnyJson<PublicKey>(signerAny)
 	);
 
 	const txResponses: { [hash: string]: TxResponse } = {};
@@ -88,15 +100,31 @@ export async function produceBlock(
 		}
 
 		// Create success txs list
-		const txs: Tx[] = sortedTxsWithHash
-			.filter((txWithHash) => txResponses[txWithHash.hash].success)
-			.map((txWithHash) => txWithHash.tx);
+		// TODO: optimize parallelization
+		const txs: Txs = create(TxsSchema, {
+			strategy: {
+				case: 'series',
+				value: {
+					txs: sortedTxsWithHash
+						.filter((txWithHash) => txResponses[txWithHash.hash].success)
+						.map((txWithHash) =>
+							create(TxsSchema, {
+								strategy: {
+									case: 'tx',
+									value: txWithHash.tx
+								}
+							})
+						)
+				}
+			}
+		});
 
 		// Create new block header object
-		const blockHeader = createBlockHeader(
+		const blockHeader = createBlockHeaderFromRawTxs(
 			chain.id,
 			lastBlock.height,
 			lastBlock.hash,
+			// TODO: use txs instead of sortedTxsWithHash
 			sortedTxsWithHash.map((tx) => tx.tx)
 		);
 		const signBytes = getBlockSignBytes(blockHeader);
@@ -107,51 +135,39 @@ export async function produceBlock(
 		);
 
 		// Create new block body object
-		const blockBody: BlockBody = {
-			txs: txs,
-			next_signers: signersAny,
-			signatures: signatures.map((signature) => signature.toString('hex'))
-		};
+		const blockBody = createBlockBody(txs, signers, signatures);
 
 		// Create block hash
-		const hash = crypto.createHash('sha256').update(signBytes).digest('hex');
+		const hash = crypto.createHash('sha256').update(signBytes).digest();
 
-		await dbTx.insert(block_headers).values(blockHeader);
-		await dbTx.insert(block_bodies).values({ block_hash: hash, ...blockBody });
-		await dbTx.insert(blocks).values({
-			hash: hash,
-			chain_id: blockHeader.chain_id,
-			height: blockHeader.height
-		});
+		await dbTx.insert(block_headers).values(convertBlockHeader(blockHeader));
+		await dbTx.insert(block_bodies).values(convertBlockBody(hash, blockBody));
+		await dbTx.insert(blocks).values(convertBlock(hash, blockHeader));
 
 		// Create new block object
-		block = {
-			hash: hash,
-			header: blockHeader,
-			body: blockBody
-		};
+		block = createBlock(hash, blockHeader, blockBody);
 	});
 
 	return block!;
 }
 
-function createBlockHeader(
+function createBlockHeaderFromRawTxs(
 	chainId: string,
 	lastHeight: number,
 	lastBlockHash: string,
 	txs: Tx[]
 ): BlockHeader {
 	const merkleTree = new MerkleTree(
-		txs.map((tx) => getTxBytes(tx)),
+		txs.map((tx) => toBinary(TxSchema, tx)),
 		(value: Buffer) => crypto.createHash('sha256').update(value).digest()
 	);
 	const txsRoot = merkleTree.getRoot();
 
-	return {
-		chain_id: chainId,
-		height: lastHeight + 1,
-		time: new Date(),
-		last_block_hash: lastBlockHash,
-		txs_merkle_root: txsRoot.toString('hex')
-	};
+	return createBlockHeader(
+		chainId,
+		BigInt(lastHeight + 1),
+		new Date(),
+		Buffer.from(lastBlockHash, 'hex'),
+		txsRoot
+	);
 }

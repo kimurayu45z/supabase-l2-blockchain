@@ -17,12 +17,12 @@ class privateKeyEd25519 implements PrivateKey {
 		return this._value;
 	}
 
-	sign(msg: Uint8Array): Uint8Array {
-		return ed.sign(msg, this._value);
+	sign(msg: Uint8Array): Promise<Uint8Array> {
+		return ed.signAsync(msg, this._value);
 	}
 
-	publicKey(): Uint8Array {
-		return ed.getPublicKey(this._value);
+	publicKey(): Promise<Uint8Array> {
+		return ed.getPublicKeyAsync(this._value);
 	}
 
 	toAny(): Any {
@@ -55,8 +55,8 @@ class publicKeyEd25519 implements PublicKey {
 		return this._value;
 	}
 
-	verify(signature: Uint8Array, msg: Uint8Array): boolean {
-		return ed.verify(signature, msg, this._value);
+	verify(signature: Uint8Array, msg: Uint8Array): Promise<boolean> {
+		return ed.verifyAsync(signature, msg, this._value);
 	}
 
 	toAny(): Any {

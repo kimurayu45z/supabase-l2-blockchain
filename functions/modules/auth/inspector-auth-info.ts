@@ -1,18 +1,20 @@
-import type { Tx } from '@supabase-l2-blockchain/types/core';
+import type { PublicKey, Tx } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
 import type { Chain } from '../../chain.ts';
 import type { Msg } from '../../types/msg.ts';
+import type { AddressConverter } from './address-converter.ts';
 import type { AuthSchema } from './schema.ts';
 
 // deno-lint-ignore require-await
 export async function inspectorAuthInfo<Schema extends AuthSchema>(
 	chain: Chain<Schema>,
 	_: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
-	tx: Tx
+	tx: Tx,
+	addressConverter: AddressConverter
 ) {
-	const length = tx.auth_info.signer_infos.length;
+	const length = tx.authInfo?.signerInfos.length;
 	if (length === 0) {
 		throw Error('signer_infos is empty');
 	}
@@ -22,16 +24,18 @@ export async function inspectorAuthInfo<Schema extends AuthSchema>(
 
 	const signerMap: { [address: string]: boolean } = {};
 
-	for (const msgAny of tx.body.msgs) {
-		const msg = chain.moduleRegistry.extractAny<Msg<Schema>>(msgAny);
+	for (const msgAny of tx.body?.msgs || []) {
+		const msg = chain.moduleRegistry.extractAny<Msg>(msgAny);
 		for (const signer of msg.signers()) {
 			signerMap[signer] = false;
 		}
 	}
 
 	// Check duplicated signer
-	for (const signerInfo of tx.auth_info.signer_infos) {
-		const address = signerInfo.public_key.value as string;
+	for (const signerInfo of tx.authInfo?.signerInfos || []) {
+		const address = addressConverter(
+			chain.moduleRegistry.extractAny<PublicKey>(signerInfo.publicKey!)
+		);
 
 		if (signerMap[address]) {
 			throw Error(`Duplicated signer: ${address}`);

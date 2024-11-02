@@ -4,7 +4,6 @@ import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/sessio
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import type { Chain } from '../chain.ts';
-import type { MsgConstructor } from './msg.ts';
 
 export interface Module<Schema extends Record<string, unknown>> {
 	constructor: {
@@ -13,8 +12,6 @@ export interface Module<Schema extends Record<string, unknown>> {
 		name(): string;
 		types(): AnyPossibleConstructor[];
 	};
-
-	msgs(): MsgConstructor<Schema>[];
 
 	inspector(
 		chain: Chain<Schema>,

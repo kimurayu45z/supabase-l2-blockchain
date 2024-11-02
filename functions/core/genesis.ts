@@ -1,11 +1,12 @@
 import { Buffer } from 'node:buffer';
 
-import type { Any } from '@supabase-l2-blockchain/types/core';
+import { toJson } from '@bufbuild/protobuf';
+import { AnySchema, type AnyJson } from '@bufbuild/protobuf/wkt';
+import type { PublicKey } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
 import type { Chain } from '../chain.ts';
-import type { PublicKey } from '../types/crypto/public-key.ts';
 import type { GenesisState } from '../types/genesis.ts';
 import { coreSchema, type CoreSchema } from './schema/mod.ts';
 
@@ -20,7 +21,7 @@ export async function importGenesis<Schema extends CoreSchema>(
 ): Promise<void> {
 	const hash = Buffer.from(state.genesis_hash, 'hex');
 	const signers = state.signers.map((signerAny) =>
-		chain.moduleRegistry.extractAny<PublicKey>(signerAny)
+		chain.moduleRegistry.extractAnyJson<PublicKey>(signerAny)
 	);
 
 	await chain.db.transaction(async (dbTx) => {
@@ -68,7 +69,7 @@ export async function exportGenesis<Schema extends CoreSchema>(
 
 	const state: GenesisState = {
 		genesis_hash: lastBlock.hash,
-		signers: lastBlockBody.next_signers as Any[],
+		signers: lastBlockBody.next_signers as AnyJson[],
 		modules: modules
 	};
 
@@ -99,7 +100,7 @@ export async function insertGenesisBlock<Schema extends CoreSchema>(
 	await dbTx.insert(coreSchema.block_bodies).values({
 		block_hash: hash,
 		txs: [],
-		next_signers: signers.map((publicKey) => chain.moduleRegistry.packAny(publicKey)),
+		next_signers: signers.map((publicKey) => toJson(AnySchema, publicKey.toAny())),
 		signatures: []
 	});
 	await dbTx.insert(coreSchema.blocks).values({

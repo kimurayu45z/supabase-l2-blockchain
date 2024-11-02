@@ -1,3 +1,8 @@
+import { Buffer } from 'node:buffer';
+
+import { toJson } from '@bufbuild/protobuf';
+import { AuthInfoSchema, TxBodySchema, type Tx } from '@supabase-l2-blockchain/types/core';
+import type { InferInsertModel } from 'drizzle-orm';
 import { boolean, integer, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const txs = pgTable('txs', {
@@ -26,3 +31,12 @@ CREATE TABLE txs
 	msg_responses JSONB[]
 );
 `;
+
+export function convertTx(hash: Buffer, tx: Tx): InferInsertModel<typeof txs> {
+	return {
+		hash: hash.toString('hex'),
+		body: tx.body ? toJson(TxBodySchema, tx.body) : {},
+		auth_info: tx.authInfo ? toJson(AuthInfoSchema, tx.authInfo) : {},
+		signatures: tx.signatures.map((signature) => Buffer.from(signature).toString('hex'))
+	};
+}

@@ -1,10 +1,12 @@
 import { Buffer } from 'node:buffer';
+import * as crypto from 'node:crypto';
+
+import { PrivateKeyEd25519, PublicKeyEd25519 } from '@supabase-l2-blockchain/types/modules/crypto';
 
 import { createMockDb } from '../chain.test.ts';
 import { Chain } from '../chain.ts';
 import { ModuleRegistry } from '../module-registry.ts';
 import { CryptoModule } from '../modules/crypto/crypto.ts';
-import { createKeyPairEd25519, signEd25519 } from '../types/crypto/ed25519.test.ts';
 import { insertGenesisBlock } from './genesis.ts';
 import { produceBlock } from './produce-block.ts';
 import { createTableSqlBlocks } from './schema/blocks.ts';
@@ -24,13 +26,14 @@ Deno.test(
 			new ModuleRegistry(new CryptoModule())
 		);
 
-		const [privateKey, publicKey] = createKeyPairEd25519(Buffer.from('seed'));
+		const privateKey = new PrivateKeyEd25519(crypto.randomBytes(32));
+		const publicKey = new PublicKeyEd25519(privateKey.publicKey());
 
 		await chain.db.transaction(async (dbTx) => {
 			await insertGenesisBlock(chain, dbTx, Buffer.from('genesis'), [publicKey]);
 		});
 		const block = await produceBlock(chain, [], (_, signBytes) =>
-			Promise.resolve(signEd25519(privateKey, signBytes))
+			Promise.resolve(privateKey.sign(signBytes))
 		);
 
 		console.log(block);

@@ -32,7 +32,7 @@ message Txs {
 }
 
 message BlockBody {
-    repeated Txs txs = 1;
+    Txs txs = 1;
     repeated google.protobuf.Any next_signers = 2;
     repeated bytes signatures = 3;
 }

@@ -1,14 +1,13 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@noble/ed25519@^2.1.0": "2.1.0",
-    "jsr:@noble/secp256k1@^2.1.0": "2.1.0",
     "jsr:@std/assert@^1.0.6": "1.0.6",
     "jsr:@std/collections@^1.0.9": "1.0.9",
     "jsr:@std/internal@^1.0.4": "1.0.4",
     "jsr:@supabase/functions-js@^2.4.3": "2.4.3",
+    "npm:@bufbuild/protobuf@^2.2.2": "2.2.2",
     "npm:@noble/hashes@*": "1.5.0",
-    "npm:@supabase-l2-blockchain/types@0.1.2": "0.1.2",
+    "npm:@supabase-l2-blockchain/types@0.1.7": "0.1.7_@bufbuild+protobuf@2.2.2",
     "npm:@testcontainers/postgresql@^10.13.2": "10.13.2",
     "npm:@types/node@*": "22.5.4",
     "npm:drizzle-orm@~0.34.1": "0.34.1_postgres@3.4.5",
@@ -18,12 +17,6 @@
     "npm:postgres@^3.4.5": "3.4.5"
   },
   "jsr": {
-    "@noble/ed25519@2.1.0": {
-      "integrity": "59a6ad395a37a0d065f6a2771e56fe52ea4bd9070c77bdaca5c475f5184412cc"
-    },
-    "@noble/secp256k1@2.1.0": {
-      "integrity": "b5843dfb90c67026ec5d2771cc2c809155fa5954ff0300b23de5d4a1f4eec758"
-    },
     "@std/assert@1.0.6": {
       "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
       "dependencies": [
@@ -46,6 +39,53 @@
   "npm": {
     "@balena/dockerignore@1.0.2": {
       "integrity": "sha512-wMue2Sy4GAVTk6Ic4tJVcnfdau+gx2EnG7S+uAEe+TWJFqE4YoWN4/H8MSLj4eYJKxGg26lZwboEniNiNwZQ6Q=="
+    },
+    "@bufbuild/buf-darwin-arm64@1.46.0": {
+      "integrity": "sha512-lSmTKyRhg+71acXp9QeX/wm+vjkf0J3n38wph7KOwMfCEeK4A2AkqsGOkoXSiaIvidA2pRU9RJRQYfryzCA9Pg=="
+    },
+    "@bufbuild/buf-darwin-x64@1.46.0": {
+      "integrity": "sha512-Oa9XTLJshsEjzowyt2mH9XrXW38DRFdz7ml+IYKXVQPotNLr04ix7QES7A1eOBJtxLwuTiri4ScXuBLQGNX8+A=="
+    },
+    "@bufbuild/buf-linux-aarch64@1.46.0": {
+      "integrity": "sha512-CbxbLH5sQCRjEKVEcWJySvCKyAPAUhX0vCTifT/eQyZ70FUsqCJKJ6+dKl6Ajk0CgUHqf8jkU/wX/+aQFYXyaA=="
+    },
+    "@bufbuild/buf-linux-x64@1.46.0": {
+      "integrity": "sha512-bMqp+Q+16KPbuwX34/OLDeiimnwt5sfvHqyeMeRz4LLwLshbmM3m+8dGCSHZRo3Lr+4gW1PfunrfaEmcGqPHLQ=="
+    },
+    "@bufbuild/buf-win32-arm64@1.46.0": {
+      "integrity": "sha512-geVYXp1PWJiAAFpwhgP8Cnct0+Rdr89BF/WZoIh5WwFGYITGiu5Hb1Ui9DTrEYwDzahPCyPxgIVwzzW6kPWSag=="
+    },
+    "@bufbuild/buf-win32-x64@1.46.0": {
+      "integrity": "sha512-6nsxkzj5a1L41NOJFKjli8j6GB/NkPHLIr0T/b27Y3GfprVYQawOComYD5HfojvBLuAiE2cD/kEQIWKK1YRcng=="
+    },
+    "@bufbuild/buf@1.46.0": {
+      "integrity": "sha512-uN3NKuAKvcQcZc1hn9+njSCusL7NAILqQI7mlkDDa4kRy7cTsiw53ggddfAs0YXbQ8zZnmudwwWjKRDIUaRqXQ==",
+      "dependencies": [
+        "@bufbuild/buf-darwin-arm64",
+        "@bufbuild/buf-darwin-x64",
+        "@bufbuild/buf-linux-aarch64",
+        "@bufbuild/buf-linux-x64",
+        "@bufbuild/buf-win32-arm64",
+        "@bufbuild/buf-win32-x64"
+      ]
+    },
+    "@bufbuild/protobuf@2.2.2": {
+      "integrity": "sha512-UNtPCbrwrenpmrXuRwn9jYpPoweNXj8X5sMvYgsqYyaH8jQ6LfUJSk3dJLnBK+6sfYPrF4iAIo5sd5HQ+tg75A=="
+    },
+    "@bufbuild/protoc-gen-es@2.2.2_@bufbuild+protobuf@2.2.2": {
+      "integrity": "sha512-dQNfX2c6srAevuT0NR+C5OrNp+dlebIhR2R/GQOhJykCMJB1GB0jBnniSEWC+6YIUGFGLXgSyYbtNPaxZGPM0Q==",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@bufbuild/protoplugin"
+      ]
+    },
+    "@bufbuild/protoplugin@2.2.2_typescript@5.4.5": {
+      "integrity": "sha512-EKKrjBsA/F2l502PPWfmvx//qRJpOXpyDhwFOYSbwRYfqzEUuuNSb1A+YGE7iDxoEqxwo+len/CJny29iP1ESg==",
+      "dependencies": [
+        "@bufbuild/protobuf",
+        "@typescript/vfs",
+        "typescript"
+      ]
     },
     "@ethereumjs/rlp@4.0.1": {
       "integrity": "sha512-tqsQiBQDQdmPWE1xkkBq4rlSW5QZpLOUJ5RJh2/9fug+q9tnUhuZoVLk7s0scUIKTOzEtR72DFBXI4WiZcMpvw=="
@@ -78,11 +118,17 @@
         "@noble/hashes@1.4.0"
       ]
     },
+    "@noble/ed25519@2.1.0": {
+      "integrity": "sha512-KM4qTyXPinyCgMzeYJH/UudpdL+paJXtY3CHtHYZQtBkS8MZoPr4rOikZllIutJe0d06QDQKisyn02gxZ8TcQA=="
+    },
     "@noble/hashes@1.4.0": {
       "integrity": "sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg=="
     },
     "@noble/hashes@1.5.0": {
       "integrity": "sha512-1j6kQFb7QRru7eKN3ZDvRcP13rugwdxZqCjbiAVZfIJwgj2A65UmT4TgARXGlXgnRkORLTDTrO19ZErt7+QXgA=="
+    },
+    "@noble/secp256k1@2.1.0": {
+      "integrity": "sha512-XLEQQNdablO0XZOIniFQimiXsZDNwaYgL96dZwC54Q30imSbAOFf3NKtepc+cXyuZf5Q1HCgbqgZ2UFFuHVcEw=="
     },
     "@pkgjs/parseargs@0.11.0": {
       "integrity": "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="
@@ -105,8 +151,15 @@
         "@scure/base"
       ]
     },
-    "@supabase-l2-blockchain/types@0.1.2": {
-      "integrity": "sha512-Qg1yhs7ijAChM2A8f5xX08McG7stzTfm37EjPAR6HKe3hQrsEQ0hgVDRfJzIPYpdytUydzS+FU/tmNJbPyXlIA=="
+    "@supabase-l2-blockchain/types@0.1.7_@bufbuild+protobuf@2.2.2": {
+      "integrity": "sha512-VdivBmpwEWoqJSaxqBPdvhGMpTnIcxDdqqPvEv9yR2ZIwES4aqjB2QfZdQCtc/o8SF4xAIwo7wiE15lybcPmow==",
+      "dependencies": [
+        "@bufbuild/buf",
+        "@bufbuild/protobuf",
+        "@bufbuild/protoc-gen-es",
+        "@noble/ed25519",
+        "@noble/secp256k1"
+      ]
     },
     "@testcontainers/postgresql@10.13.2": {
       "integrity": "sha512-xd3u/rL8FrOBHFMu1aU+2d4sqPz9ffEb19ITtopT/tyBZWW9qCsgR6wSg0r2BJUd+2hT4UR5nR5cymi+ROkehw==",
@@ -165,6 +218,13 @@
       "integrity": "sha512-ZIbEqKAsi5gj35y4P4vkJYly642wIbY6PqoN0xiyQGshKUGXR9WQjF/iF9mXBQ8uBKy3ezfsCkcoHKhd0BzuDA==",
       "dependencies": [
         "@types/node@18.19.62"
+      ]
+    },
+    "@typescript/vfs@1.6.0_typescript@5.4.5": {
+      "integrity": "sha512-hvJUjNVeBMp77qPINuUvYXj4FyWeeMMKZkxEATEU3hqBAQ7qdTBCUFT7Sp0Zu0faeEtFf+ldXxMEDr/bk73ISg==",
+      "dependencies": [
+        "debug",
+        "typescript"
       ]
     },
     "abort-controller@3.0.0": {
@@ -906,6 +966,9 @@
     "tweetnacl@0.14.5": {
       "integrity": "sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA=="
     },
+    "typescript@5.4.5": {
+      "integrity": "sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ=="
+    },
     "undici-types@5.26.5": {
       "integrity": "sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA=="
     },
@@ -989,12 +1052,11 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@noble/ed25519@^2.1.0",
-      "jsr:@noble/secp256k1@^2.1.0",
       "jsr:@std/assert@^1.0.6",
       "jsr:@std/collections@^1.0.9",
       "jsr:@supabase/functions-js@^2.4.3",
-      "npm:@supabase-l2-blockchain/types@0.1.2",
+      "npm:@bufbuild/protobuf@^2.2.2",
+      "npm:@supabase-l2-blockchain/types@0.1.7",
       "npm:@testcontainers/postgresql@^10.13.2",
       "npm:drizzle-orm@~0.34.1",
       "npm:merkletreejs@0.4",

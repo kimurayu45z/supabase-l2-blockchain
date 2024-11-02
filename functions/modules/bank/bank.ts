@@ -6,7 +6,6 @@ import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import type { Chain } from '../../chain.ts';
 import type { Module } from '../../types/module.ts';
-import type { MsgConstructor } from '../../types/msg.ts';
 import { MsgSend } from './msg-send.ts';
 import type { BankSchema } from './schema.ts';
 import { bankSchema } from './schema.ts';
@@ -19,10 +18,6 @@ export class BankModule<Schema extends BankSchema> implements Module<Schema> {
 	}
 
 	static types(): AnyPossibleConstructor[] {
-		return [];
-	}
-
-	msgs(): MsgConstructor<Schema>[] {
 		return [MsgSend];
 	}
 
