@@ -37,8 +37,8 @@ export function getBlockSignMessage(blockHeader: BlockHeader): Uint8Array {
 	return toBinary(BlockHeaderSchema, blockHeader);
 }
 
-export function getBlockHash(blockHeader: BlockHeader): string {
-	return crypto.createHash('sha256').update(toBinary(BlockHeaderSchema, blockHeader)).digest('hex');
+export function getBlockHash(blockHeader: BlockHeader): Buffer {
+	return crypto.createHash('sha256').update(toBinary(BlockHeaderSchema, blockHeader)).digest();
 }
 
 export function createBlockBody(
