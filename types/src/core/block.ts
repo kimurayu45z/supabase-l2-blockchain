@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 
 import { create, toBinary } from '@bufbuild/protobuf';
-import { TimestampSchema } from '@bufbuild/protobuf/wkt';
+import { timestampFromDate } from '@bufbuild/protobuf/wkt';
 
 import {
 	Block,
@@ -24,10 +24,7 @@ export function createBlockHeader(
 	return create(BlockHeaderSchema, {
 		chainId: chainId,
 		height: height,
-		time: create(TimestampSchema, {
-			seconds: BigInt(Math.floor(time.getTime() / 1000)),
-			nanos: time.getMilliseconds() * 1000000
-		}),
+		time: timestampFromDate(time),
 		lastBlockHash: lastBlockHash,
 		txsMerkleRoot: txsMerkleRoot
 	});

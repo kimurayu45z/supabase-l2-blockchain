@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 
 import { create, Registry, toBinary, toJsonString } from '@bufbuild/protobuf';
-import { TimestampSchema } from '@bufbuild/protobuf/wkt';
+import { timestampFromDate } from '@bufbuild/protobuf/wkt';
 
 import { AnyPossible } from './any-possible';
 import { PublicKey } from './public-key';
@@ -34,10 +34,7 @@ export function createTxBody(msgs: AnyPossible[], memo: string, timeoutTimestamp
 	return create(TxBodySchema, {
 		msgs: msgs.map((msg) => msg.toAny()),
 		memo,
-		timeoutTimestamp: create(TimestampSchema, {
-			seconds: BigInt(Math.floor(timeoutTimestamp.getTime() / 1000)),
-			nanos: timeoutTimestamp.getMilliseconds() * 1000000
-		})
+		timeoutTimestamp: timestampFromDate(timeoutTimestamp)
 	});
 }
 

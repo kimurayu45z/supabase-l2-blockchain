@@ -1,6 +1,6 @@
 {
   "name": "@supabase-l2-blockchain/types",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "files": [
     "dist"
   ],
@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsc --build --clean && tsc --build",
+    "build": "rm -r dist && tsc --build",
     "generate": "cd .. && buf generate"
   },
   "author": "KIMURA Yu",
