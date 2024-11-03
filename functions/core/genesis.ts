@@ -102,7 +102,7 @@ export async function insertGenesisBlock<Schema extends CoreSchema>(
 	await dbTx.insert(coreSchema.block_bodies).values({
 		chain_id: chain.id,
 		height: 0,
-		txs: [],
+		txs: {},
 		next_signers: signers.map(
 			(publicKey) => chain.moduleRegistry.toJson(publicKey.toAny()) as AnyJson
 		),

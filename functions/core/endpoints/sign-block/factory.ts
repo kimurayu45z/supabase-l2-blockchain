@@ -10,8 +10,14 @@ export function signBlockFactory(
 	postBlockHandler: (blockBinary: Uint8Array) => Promise<void>
 ): Deno.ServeHandler {
 	return async (_req: Request) => {
-		await signBlock(chain, signHandler, postBlockHandler);
+		try {
+			await signBlock(chain, signHandler, postBlockHandler);
 
-		return new Response(null, { status: 200 });
+			return new Response(null, { status: 200 });
+		} catch (error) {
+			return new Response(JSON.stringify({ error: (error as Error).message }), {
+				status: 400
+			});
+		}
 	};
 }
