@@ -1,8 +1,13 @@
-import type { Asset } from '@supabase-l2-blockchain/types/core';
-import type { Balance } from '@supabase-l2-blockchain/types/modules/bank';
+import { createAsset, type Asset } from '@supabase-l2-blockchain/types/core';
 import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
 
 const TABLE_BALANCES = 'balances';
+
+type DbBalance = {
+	address: string;
+	asset_id: string;
+	amount: string;
+};
 
 export async function getBalance(
 	supabase: SupabaseClient,
@@ -14,14 +19,11 @@ export async function getBalance(
 		.select('*')
 		.eq('address', address)
 		.eq('asset_id', assetId)
-		.single<Balance>();
+		.single<DbBalance>();
 
-	const amount = !res.error ? res.data.amount : BigInt(0);
+	const amount = BigInt(!res.error ? res.data.amount : 0);
 
-	return {
-		id: assetId,
-		amount: amount
-	};
+	return createAsset(assetId, amount);
 }
 
 export async function getBalances(supabase: SupabaseClient, address: string): Promise<Asset[]> {
@@ -29,7 +31,7 @@ export async function getBalances(supabase: SupabaseClient, address: string): Pr
 		.from(TABLE_BALANCES)
 		.select('*')
 		.eq('address', address)
-		.returns<Balance[]>();
+		.returns<DbBalance[]>();
 	if (res.error) {
 		throw res.error;
 	}
@@ -45,7 +47,7 @@ export type BalanceMap = {
 	};
 };
 
-export function createBalanceMap(balances: Balance[]): BalanceMap {
+export function createBalanceMap(balances: DbBalance[]): BalanceMap {
 	const balanceMap: BalanceMap = {};
 	for (const balance of balances) {
 		if (!balanceMap[balance.address]) {
@@ -53,10 +55,7 @@ export function createBalanceMap(balances: Balance[]): BalanceMap {
 				assets: []
 			};
 		}
-		balanceMap[balance.address].assets.push({
-			id: balance.asset_id,
-			amount: balance.amount
-		});
+		balanceMap[balance.address].assets.push(createAsset(balance.asset_id, BigInt(balance.amount)));
 	}
 	return balanceMap;
 }

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package supabase_l2_blockchain.modules.auth.v1;
+
+import "modules/auth/account.proto";
+
+message GenesisState {
+    repeated supabase_l2_blockchain.modules.auth.v1.Account accounts = 1;
+}

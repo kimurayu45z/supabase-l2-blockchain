@@ -1,88 +1,134 @@
-import type { Block, BlockBody, BlockHeader } from '@supabase-l2-blockchain/types/core';
+import { fromJson, JsonValue, Registry } from '@bufbuild/protobuf';
+import { AnyJson } from '@bufbuild/protobuf/wkt';
+import {
+	BlockBodySchema,
+	BlockHeaderSchema,
+	createBlock,
+	createBlockHeader,
+	type Block,
+	type BlockHeader
+} from '@supabase-l2-blockchain/types/core';
 import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
 
 const TABLE_BLOCK_HEADERS = 'block_headers';
 const TABLE_BLOCK_BODIES = 'block_bodies';
-const TABLE_BLOCKS = 'blocks';
+
+type DbBlockHeader = {
+	chain_id: string;
+	height: number;
+	time: Date;
+	last_block_hash: string;
+	txs_merkle_root: string;
+};
+
+type DbBlockBody = {
+	block_hash: string;
+	txs: JsonValue;
+	next_signers: AnyJson[];
+	signatures: string[];
+};
+
+type DbBlock = {
+	hash: string;
+	chain_id: string;
+	height: number;
+};
 
 export async function getBlockHeader(
 	supabase: SupabaseClient,
 	chainId: string,
-	height: bigint | null
+	height: bigint | null,
+	protobufRegistry: Registry
 ): Promise<BlockHeader> {
 	const select = supabase.from(TABLE_BLOCK_HEADERS).select('*');
+	let data: DbBlockHeader;
 	if (!height) {
 		const res = await select
 			.eq('chain_id', chainId)
 			.order('height', { ascending: false })
-			.single<BlockHeader>();
+			.single<DbBlockHeader>();
 		if (res.error) {
 			throw res.error;
 		}
-		return res.data;
+		data = res.data;
 	}
 
-	const res = await select.eq('chain_id', chainId).eq('height', height).single<BlockHeader>();
+	const res = await select.eq('chain_id', chainId).eq('height', height).single<DbBlockHeader>();
 	if (res.error) {
 		throw res.error;
 	}
-	return res.data;
+	data = res.data;
+
+	return fromJson(
+		BlockHeaderSchema,
+		{
+			chainId: data.chain_id,
+			height: data.height,
+			time: JSON.stringify(data.time),
+			lastBlockHash: data.last_block_hash,
+			txsMerkleRoot: data.txs_merkle_root
+		},
+		{ registry: protobufRegistry }
+	);
 }
 
 export async function getBlock(
 	supabase: SupabaseClient,
 	chainId: string,
-	height: bigint | null
+	height: number | null,
+	protobufRegistry: Registry
 ): Promise<Block> {
 	const select = supabase
-		.from(TABLE_BLOCKS)
+		.from(TABLE_BLOCK_HEADERS)
 		.select(
 			`
-        hash,
-        ${TABLE_BLOCK_HEADERS} (*),
-        ${TABLE_BLOCK_BODIES} (*)
+*,
+${TABLE_BLOCK_BODIES} (*)
 `
 		)
 		.eq('chain_id', chainId)
-		.eq(`${TABLE_BLOCK_HEADERS}.chain_id`, chainId)
-		.eq(`${TABLE_BLOCK_BODIES}.block_hash`, `${TABLE_BLOCKS}.hash`);
+		.eq(`${TABLE_BLOCK_BODIES}.chain_id`, chainId);
 
 	const res = await (() => {
 		if (!height) {
 			return select
 				.order('height', { ascending: false })
-				.order(`${TABLE_BLOCK_HEADERS}.height`, { ascending: false })
-				.single<{ hash: string } & BlockHeader & BlockBody>();
+				.order(`${TABLE_BLOCK_BODIES}.height`, { ascending: false })
+				.single<DbBlock & DbBlockHeader & DbBlockBody>();
 		}
 
 		return select
 			.eq('height', height)
-			.eq(`${TABLE_BLOCK_HEADERS}.height`, height)
-			.single<{ hash: string } & BlockHeader & BlockBody>();
-	})().then((res) => ({
-		...res,
-		data: res.data
-			? ({
-					hash: res.data.hash,
-					header: {
-						chain_id: res.data.chain_id,
-						height: res.data.height,
-						time: res.data.time,
-						last_block_hash: res.data.last_block_hash,
-						txs_merkle_root: res.data.txs_merkle_root
-					},
-					body: {
-						txs: res.data.txs,
-						next_signers: res.data.next_signers,
-						signatures: res.data.signatures
-					}
-				} as Block)
-			: null
-	}));
+			.eq(`${TABLE_BLOCK_BODIES}.height`, height)
+			.single<DbBlock & DbBlockHeader & DbBlockBody>();
+	})();
 
 	if (res.error) {
 		throw res.error;
 	}
+	const data = res.data;
 
-	return res.data!;
+	return createBlock(
+		Buffer.from(data.hash, 'base64'),
+		fromJson(
+			BlockHeaderSchema,
+			{
+				chainId: data.chain_id,
+				height: data.height,
+				time: JSON.stringify(data.time),
+				lastBlockHash: data.last_block_hash,
+				txsMerkleRoot: data.txs_merkle_root
+			},
+			{ registry: protobufRegistry }
+		),
+		fromJson(
+			BlockBodySchema,
+			{
+				txs: data.txs,
+				nextSigners: data.next_signers,
+				signatures: data.signatures
+			},
+			{ registry: protobufRegistry }
+		)
+	);
 }

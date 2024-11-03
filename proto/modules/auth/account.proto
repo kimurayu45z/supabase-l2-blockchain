@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package supabase_l2_blockchain.modules.auth.v1;
+
+message Account {
+    string address = 1;
+    uint64 sequence = 2;
+}

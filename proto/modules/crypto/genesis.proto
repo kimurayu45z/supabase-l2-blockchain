@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+package supabase_l2_blockchain.modules.crypto.v1;
+
+message GenesisState {
+}

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package supabase_l2_blockchain.modules.bank.v1;
+
+import "core/asset.proto";
+
+message Balance {
+    string address = 1;
+    repeated supabase_l2_blockchain.core.v1.Asset assets = 2;
+}

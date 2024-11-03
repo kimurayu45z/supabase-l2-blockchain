@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package supabase_l2_blockchain.modules.bank.v1;
+
+import "modules/bank/balance.proto";
+
+message GenesisState {
+    repeated supabase_l2_blockchain.modules.bank.v1.Balance balances = 1;
+}

@@ -9,7 +9,7 @@ import "core/tx.proto";
 
 message BlockHeader {
     string chain_id = 1;
-    int64 height = 2;
+    uint64 height = 2;
     google.protobuf.Timestamp time = 3;
     bytes last_block_hash = 4;
     bytes txs_merkle_root = 5;
@@ -38,7 +38,6 @@ message BlockBody {
 }
 
 message Block {
-    bytes hash = 1;
-    BlockHeader header = 2;
-    BlockBody body = 3;
+    BlockHeader header = 1;
+    BlockBody body = 2;
 }

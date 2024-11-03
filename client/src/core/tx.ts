@@ -1,4 +1,11 @@
-import type { Tx, TxBody, TxResponse, TxSignDoc } from '@supabase-l2-blockchain/types/core';
+import { fromJson, JsonValue, Registry } from '@bufbuild/protobuf';
+import {
+	AuthInfoSchema,
+	createTx,
+	TxBodySchema,
+	type Tx,
+	type TxResponse
+} from '@supabase-l2-blockchain/types/core';
 import type { SupabaseClient } from '@supabase/supabase-js/dist/module/index.js';
 
 const TABLE_TXS = 'txs';
@@ -19,31 +26,39 @@ type ConfirmedTx = {
 
 type SchemaTx = {
 	hash: string;
-} & Tx & {
-		height: number | null;
-	} & Partial<TxResponse>;
+	body: JsonValue;
+	auth_info: JsonValue;
+	signatures: string[];
 
-function createPendingTx(schemaTx: SchemaTx): PendingTx {
+	height: number | null;
+} & Partial<TxResponse>;
+
+function createTxFromJson(
+	body: JsonValue,
+	authInfo: JsonValue,
+	signatures: string[],
+	protobufRegistry: Registry
+): Tx {
+	return createTx(
+		fromJson(TxBodySchema, body, { registry: protobufRegistry }),
+		fromJson(AuthInfoSchema, authInfo, { registry: protobufRegistry }),
+		signatures.map((signature) => Buffer.from(signature, 'hex'))
+	);
+}
+
+function createPendingTx(schemaTx: SchemaTx, protobufRegistry: Registry): PendingTx {
 	return {
 		hash: schemaTx.hash,
-		tx: {
-			body: schemaTx.body,
-			auth_info: schemaTx.auth_info,
-			signatures: schemaTx.signatures
-		},
+		tx: createTxFromJson(schemaTx.body, schemaTx.auth_info, schemaTx.signatures, protobufRegistry),
 		height: null,
 		response: null
 	};
 }
 
-function createConfirmedTx(schemaTx: SchemaTx): ConfirmedTx {
+function createConfirmedTx(schemaTx: SchemaTx, protobufRegistry: Registry): ConfirmedTx {
 	return {
 		hash: schemaTx.hash,
-		tx: {
-			body: schemaTx.body,
-			auth_info: schemaTx.auth_info,
-			signatures: schemaTx.signatures
-		},
+		tx: createTxFromJson(schemaTx.body, schemaTx.auth_info, schemaTx.signatures, protobufRegistry),
 		height: schemaTx.height!,
 		response: {
 			success: schemaTx.success!,
@@ -55,7 +70,8 @@ function createConfirmedTx(schemaTx: SchemaTx): ConfirmedTx {
 
 export async function getTx(
 	supabase: SupabaseClient,
-	hash: string
+	hash: string,
+	protobufRegistry: Registry
 ): Promise<PendingTx | ConfirmedTx> {
 	const res = await supabase.from(TABLE_TXS).select('*').eq('hash', hash).single<SchemaTx>();
 	if (res.error) {
@@ -63,14 +79,17 @@ export async function getTx(
 	}
 
 	const data: PendingTx | ConfirmedTx =
-		res.data.height && res.data.success ? createConfirmedTx(res.data) : createPendingTx(res.data);
+		res.data.height && res.data.success
+			? createConfirmedTx(res.data, protobufRegistry)
+			: createPendingTx(res.data, protobufRegistry);
 
 	return data;
 }
 
 export async function getConfirmedTxs(
 	supabase: SupabaseClient,
-	height: bigint
+	height: bigint,
+	protobufRegistry: Registry
 ): Promise<ConfirmedTx[]> {
 	const res = await supabase
 		.from(TABLE_TXS)
@@ -82,52 +101,21 @@ export async function getConfirmedTxs(
 		throw res.error;
 	}
 
-	const data: ConfirmedTx[] = res.data.map((datum) => createConfirmedTx(datum));
+	const data: ConfirmedTx[] = res.data.map((datum) => createConfirmedTx(datum, protobufRegistry));
 
 	return data;
 }
 
-export async function getPendingTxs(supabase: SupabaseClient): Promise<PendingTx[]> {
+export async function getPendingTxs(
+	supabase: SupabaseClient,
+	protobufRegistry: Registry
+): Promise<PendingTx[]> {
 	const res = await supabase.from(TABLE_TXS).select('*').eq('height', null).returns<SchemaTx[]>();
 	if (res.error) {
 		throw res.error;
 	}
 
-	const data: PendingTx[] = res.data.map((datum) => createPendingTx(datum));
+	const data: PendingTx[] = res.data.map((datum) => createPendingTx(datum, protobufRegistry));
 
 	return data;
-}
-
-function canonicalizeObjectForSerialization(value: object): unknown {
-	if (Object.prototype.toString.call(value) === '[object Object]') {
-		const sorted = {} as Record<string, unknown>;
-		const keys = Object.keys(value).sort();
-
-		for (const key of keys) {
-			const keyValue = (value as Record<string, unknown>)[key];
-			if (keyValue != null) {
-				sorted[key] = canonicalizeObjectForSerialization(keyValue);
-			}
-		}
-
-		return sorted;
-	}
-
-	if (Array.isArray(value)) {
-		return value.map((element) => canonicalizeObjectForSerialization(element));
-	}
-
-	return value === undefined ? null : value;
-}
-
-export function getTxSignBytes(txBody: TxBody, chainId: string, sequence: number): Buffer {
-	const signDoc: TxSignDoc = {
-		body: txBody,
-		chain_id: chainId,
-		sequence: sequence
-	};
-	const canonical = canonicalizeObjectForSerialization(signDoc);
-	const json = JSON.stringify(canonical);
-
-	return Buffer.from(json);
 }
