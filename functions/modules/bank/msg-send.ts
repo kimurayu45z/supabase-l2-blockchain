@@ -13,7 +13,7 @@ import type { Msg, MsgConstructor } from '../../types/msg.ts';
 import type { BankSchema } from './schema.ts';
 import { send } from './send.ts';
 
-class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
+export class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 	constructor(public value: Omit<ProtoMsgSend, keyof Message>) {}
 
 	signers(): string[] {
@@ -45,5 +45,4 @@ class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 	}
 }
 
-const msgSend: MsgConstructor = MsgSend;
-export { msgSend as MsgSend };
+const _: MsgConstructor = MsgSend;
