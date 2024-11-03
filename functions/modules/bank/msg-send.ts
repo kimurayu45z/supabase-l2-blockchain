@@ -1,4 +1,4 @@
-import type { Message } from '@bufbuild/protobuf';
+import type { DescMessage, Message } from '@bufbuild/protobuf';
 import { create, fromBinary, toBinary } from '@bufbuild/protobuf';
 import type { Any } from '@bufbuild/protobuf/wkt';
 import { AnySchema } from '@bufbuild/protobuf/wkt';
@@ -36,7 +36,7 @@ class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 		});
 	}
 
-	static desc() {
+	static desc(): DescMessage {
 		return MsgSendSchema;
 	}
 

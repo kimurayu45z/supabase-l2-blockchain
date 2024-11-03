@@ -64,7 +64,7 @@ export async function getBlockHeader(
 		{
 			chainId: data.chain_id,
 			height: data.height,
-			time: JSON.stringify(data.time),
+			time: data.time.toISOString(),
 			lastBlockHash: data.last_block_hash,
 			txsMerkleRoot: data.txs_merkle_root
 		},
