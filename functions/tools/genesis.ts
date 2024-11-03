@@ -1,1 +1,1 @@
-export { importGenesis, exportGenesis } from '../core/genesis.ts';
+export { importGenesis, exportGenesis, insertGenesisBlock } from '../core/genesis.ts';
