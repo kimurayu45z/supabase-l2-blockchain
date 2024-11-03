@@ -1,6 +1,8 @@
+import * as crypto from 'crypto';
+
 import { create, DescMessage, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { Any, AnySchema } from '@bufbuild/protobuf/wkt';
-import * as secp from '@noble/secp256k1';
+import * as secp256k1 from 'secp256k1';
 
 import { PrivateKey, PrivateKeyConstructor } from '../../core/private-key';
 import { PublicKey, PublicKeyConstructor } from '../../core/public-key';
@@ -17,13 +19,14 @@ class PrivateKeySecp256k1 implements PrivateKey {
 	}
 
 	async sign(msg: Uint8Array): Promise<Uint8Array> {
-		const sig = await secp.signAsync(msg, this._value);
+		const hash = crypto.createHash('sha256').update(msg).digest();
+		const sig = secp256k1.ecdsaSign(hash, this._value).signature;
 
-		return sig.toCompactRawBytes();
+		return Promise.resolve(sig);
 	}
 
 	publicKey(): Promise<Uint8Array> {
-		return Promise.resolve(secp.getPublicKey(this._value));
+		return Promise.resolve(secp256k1.publicKeyCreate(this._value));
 	}
 
 	toAny(): Any {
@@ -56,8 +59,10 @@ class PublicKeySecp256k1 implements PublicKey {
 		return this._value;
 	}
 
-	verify(signature: Uint8Array, msg: Uint8Array): Promise<boolean> {
-		return Promise.resolve(secp.verify(signature, msg, this._value));
+	verify(msg: Uint8Array, sig: Uint8Array): Promise<boolean> {
+		const hash = crypto.createHash('sha256').update(msg).digest();
+
+		return Promise.resolve(secp256k1.ecdsaVerify(sig, new Uint8Array(hash), this._value));
 	}
 
 	toAny(): Any {

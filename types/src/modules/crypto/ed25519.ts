@@ -1,6 +1,6 @@
 import { create, DescMessage, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { Any, AnySchema } from '@bufbuild/protobuf/wkt';
-import * as ed from '@noble/ed25519';
+import * as nacl from 'tweetnacl';
 
 import { PrivateKey, PrivateKeyConstructor } from '../../core/private-key';
 import { PublicKey, PublicKeyConstructor } from '../../core/public-key';
@@ -17,11 +17,15 @@ class PrivateKeyEd25519 implements PrivateKey {
 	}
 
 	sign(msg: Uint8Array): Promise<Uint8Array> {
-		return ed.signAsync(msg, this._value);
+		const keypair = nacl.sign.keyPair.fromSeed(this._value);
+		return Promise.resolve(nacl.sign(msg, keypair.secretKey));
 	}
 
 	publicKey(): Promise<Uint8Array> {
-		return ed.getPublicKeyAsync(this._value);
+		const slicedKey = this._value.slice(0, 32);
+		const keypair = nacl.sign.keyPair.fromSeed(slicedKey);
+
+		return Promise.resolve(keypair.publicKey);
 	}
 
 	toAny(): Any {
@@ -54,8 +58,8 @@ class PublicKeyEd25519 implements PublicKey {
 		return this._value;
 	}
 
-	verify(signature: Uint8Array, msg: Uint8Array): Promise<boolean> {
-		return ed.verifyAsync(signature, msg, this._value);
+	verify(_msg: Uint8Array, sig: Uint8Array): Promise<boolean> {
+		return Promise.resolve(nacl.sign.open(sig, this._value) !== null);
 	}
 
 	toAny(): Any {
