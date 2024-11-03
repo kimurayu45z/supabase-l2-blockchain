@@ -22,21 +22,21 @@ export async function inspectorSequence<Schema extends AuthSchema>(
 		if (!account) {
 			await dbTx.insert(accounts).values({
 				address: address,
-				sequence: '0'
+				sequence: 0
 			});
 		}
 
-		const sequence = BigInt(account?.sequence ?? 0);
+		const sequence = account?.sequence ?? 0;
 
 		// Validation
-		if (sequence !== signerInfo.sequence) {
+		if (BigInt(sequence) !== signerInfo.sequence) {
 			throw Error(`Invalid sequence of address ${address}: ${sequence} !== ${signerInfo.sequence}`);
 		}
 
 		// Increment sequence
 		await dbTx
 			.update(accounts)
-			.set({ sequence: (sequence + BigInt(1)).toString() })
+			.set({ sequence: sequence + 1 })
 			.where(eq(accounts.address, address));
 	}
 }
