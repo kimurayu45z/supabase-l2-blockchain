@@ -1,3 +1,5 @@
+import * as crypto from 'crypto';
+
 import { create, toBinary } from '@bufbuild/protobuf';
 import { TimestampSchema } from '@bufbuild/protobuf/wkt';
 
@@ -33,6 +35,10 @@ export function createBlockHeader(
 
 export function getBlockSignMessage(blockHeader: BlockHeader): Uint8Array {
 	return toBinary(BlockHeaderSchema, blockHeader);
+}
+
+export function getBlockHash(blockHeader: BlockHeader): string {
+	return crypto.createHash('sha256').update(toBinary(BlockHeaderSchema, blockHeader)).digest('hex');
 }
 
 export function createBlockBody(

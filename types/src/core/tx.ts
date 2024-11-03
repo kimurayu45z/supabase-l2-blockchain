@@ -81,9 +81,9 @@ export function createTx(txBody: TxBody, authInfo: AuthInfo, signatures: Uint8Ar
 	});
 }
 
-export function getTxHash(tx: Tx): Buffer {
+export function getTxHash(tx: Tx): string {
 	const bytes = toBinary(TxSchema, tx);
-	const hash = crypto.createHash('sha256').update(bytes).digest();
+	const hash = crypto.createHash('sha256').update(bytes).digest('hex');
 
 	return hash;
 }
