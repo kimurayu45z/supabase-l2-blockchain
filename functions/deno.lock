@@ -7,7 +7,7 @@
     "jsr:@supabase/functions-js@^2.4.3": "2.4.3",
     "npm:@bufbuild/protobuf@^2.2.2": "2.2.2",
     "npm:@noble/hashes@*": "1.5.0",
-    "npm:@supabase-l2-blockchain/types@0.1.11": "0.1.11_@bufbuild+protobuf@2.2.2",
+    "npm:@supabase-l2-blockchain/types@0.1.16": "0.1.16_@bufbuild+protobuf@2.2.2",
     "npm:@testcontainers/postgresql@^10.13.2": "10.13.2",
     "npm:@types/node@*": "22.5.4",
     "npm:drizzle-orm@~0.34.1": "0.34.1_postgres@3.4.5",
@@ -151,8 +151,8 @@
         "@scure/base"
       ]
     },
-    "@supabase-l2-blockchain/types@0.1.11_@bufbuild+protobuf@2.2.2": {
-      "integrity": "sha512-sWBQs5pIzlzNnc3TvonluCf5cbqfLxMu9OamgDRG8qhWKnL3nbiXGAAObc/A89gz5vCyn/RhxMWe9dedxsnshg==",
+    "@supabase-l2-blockchain/types@0.1.16_@bufbuild+protobuf@2.2.2": {
+      "integrity": "sha512-JB8rpO7a1cPciT9mJmnmTe7xTICjF2hmBfHvDVLTAILMWBNCqaBHxWsEmCYldh9WwuioCH6baeyAPpDiBU6ybA==",
       "dependencies": [
         "@bufbuild/buf",
         "@bufbuild/protobuf",
@@ -1056,7 +1056,7 @@
       "jsr:@std/collections@^1.0.9",
       "jsr:@supabase/functions-js@^2.4.3",
       "npm:@bufbuild/protobuf@^2.2.2",
-      "npm:@supabase-l2-blockchain/types@0.1.11",
+      "npm:@supabase-l2-blockchain/types@0.1.16",
       "npm:@testcontainers/postgresql@^10.13.2",
       "npm:drizzle-orm@~0.34.1",
       "npm:merkletreejs@0.4",

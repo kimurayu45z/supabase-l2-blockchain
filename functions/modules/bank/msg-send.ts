@@ -16,10 +16,6 @@ import { send } from './send.ts';
 class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 	constructor(public value: Omit<ProtoMsgSend, keyof Message>) {}
 
-	static type(): string {
-		return 'MsgSend';
-	}
-
 	signers(): string[] {
 		return [this.value.fromAddress];
 	}
@@ -33,8 +29,10 @@ class MsgSend<Schema extends BankSchema> implements Msg<Schema> {
 	}
 
 	toAny(): Any {
+		const value = create(MsgSendSchema, this.value);
 		return create(AnySchema, {
-			value: toBinary(MsgSendSchema, create(MsgSendSchema, this.value))
+			typeUrl: value.$typeName,
+			value: toBinary(MsgSendSchema, value)
 		});
 	}
 

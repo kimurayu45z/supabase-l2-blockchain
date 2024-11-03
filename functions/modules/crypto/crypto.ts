@@ -1,5 +1,7 @@
+import { create, toJson, type JsonValue, type Registry } from '@bufbuild/protobuf';
 import type { AnyPossibleConstructor, Tx } from '@supabase-l2-blockchain/types/core';
 import {
+	GenesisStateSchema,
 	PrivateKeyEd25519,
 	PrivateKeySecp256k1,
 	PublicKeyEd25519,
@@ -31,14 +33,15 @@ export class CryptoModule<Schema extends Record<string, unknown>> implements Mod
 
 	async importGenesis(
 		_dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
-		_state: CryptoState
+		_state: JsonValue,
+		_protobufRegistry: Registry
 	): Promise<void> {}
 
 	// deno-lint-ignore require-await
-	async exportGenesis(_db: PostgresJsDatabase<Schema>): Promise<CryptoState> {
-		return {};
+	async exportGenesis(
+		_db: PostgresJsDatabase<Schema>,
+		_protobufRegistry: Registry
+	): Promise<JsonValue> {
+		return toJson(GenesisStateSchema, create(GenesisStateSchema, {}));
 	}
 }
-
-// deno-lint-ignore ban-types
-export type CryptoState = {};

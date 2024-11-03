@@ -1,3 +1,4 @@
+import type { JsonValue, Registry } from '@bufbuild/protobuf';
 import type { AnyPossibleConstructor, Tx } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
@@ -21,8 +22,9 @@ export interface Module<Schema extends Record<string, unknown>> {
 
 	importGenesis(
 		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
-		state: unknown
+		state: JsonValue,
+		protobufRegistry: Registry
 	): Promise<void>;
 
-	exportGenesis(db: PostgresJsDatabase<Schema>): Promise<unknown>;
+	exportGenesis(db: PostgresJsDatabase<Schema>, protobufRegistry: Registry): Promise<JsonValue>;
 }

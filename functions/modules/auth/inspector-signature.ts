@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer';
 
 import { zip } from '@std/collections';
 import type { AnyPossibleConstructor, PublicKey, Tx } from '@supabase-l2-blockchain/types/core';
-import { getTxSignBytes } from '@supabase-l2-blockchain/types/core';
+import { getTxSignMessage } from '@supabase-l2-blockchain/types/core';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 
@@ -27,7 +27,7 @@ export async function inspectorSignature<Schema extends AuthSchema>(
 			throw Error(`Unsupported public key type: ${signerInfo.publicKey!.typeUrl}`);
 		}
 
-		const signBytes = getTxSignBytes(
+		const signMessage = getTxSignMessage(
 			tx.body!,
 			chain.id,
 			signerInfo.sequence,
@@ -36,7 +36,7 @@ export async function inspectorSignature<Schema extends AuthSchema>(
 
 		const pubKey = chain.moduleRegistry.extractAny<PublicKey>(signerInfo.publicKey!);
 
-		const match = pubKey.verify(signBytes, Buffer.from(signature));
+		const match = pubKey.verify(signMessage, Buffer.from(signature));
 
 		if (!match) {
 			const address = addressConverter(pubKey);

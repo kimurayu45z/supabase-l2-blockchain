@@ -1,8 +1,8 @@
-import { numeric, pgTable, text } from 'drizzle-orm/pg-core';
+import { integer, pgTable, text } from 'drizzle-orm/pg-core';
 
 export const accounts = pgTable('accounts', {
 	address: text('address').primaryKey(),
-	sequence: numeric('sequence').notNull()
+	sequence: integer('sequence').notNull()
 });
 
 export const authSchema = {
@@ -10,3 +10,11 @@ export const authSchema = {
 };
 
 export type AuthSchema = typeof authSchema;
+
+export const createTableSqlAccounts = `
+CREATE TABLE accounts
+(
+	address TEXT NOT NULL PRIMARY KEY,
+	sequence INTEGER NOT NULL
+)
+`;

@@ -1,4 +1,3 @@
-import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
 import { PrivateKeyEd25519, PublicKeyEd25519 } from '@supabase-l2-blockchain/types/modules/crypto';
@@ -30,7 +29,7 @@ Deno.test(
 		const publicKey = new PublicKeyEd25519(await privateKey.publicKey());
 
 		await chain.db.transaction(async (dbTx) => {
-			await insertGenesisBlock(chain, dbTx, Buffer.from('genesis'), [publicKey]);
+			await insertGenesisBlock(chain, dbTx, 'genesis', [publicKey]);
 		});
 		const block = await produceBlock(chain, [], (_, signBytes) => privateKey.sign(signBytes));
 

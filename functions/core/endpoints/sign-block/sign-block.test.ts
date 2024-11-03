@@ -1,18 +1,15 @@
-import { Buffer } from 'node:buffer';
 import * as crypto from 'node:crypto';
 
-import { toJson } from '@bufbuild/protobuf';
-import { AnySchema } from '@bufbuild/protobuf/wkt';
 import { PrivateKeyEd25519, PublicKeyEd25519 } from '@supabase-l2-blockchain/types/modules/crypto';
 
-import { createMockDb } from '../../chain.test.ts';
-import { Chain } from '../../chain.ts';
-import { ModuleRegistry } from '../../module-registry.ts';
-import { CryptoModule } from '../../modules/crypto/crypto.ts';
-import { insertGenesisBlock } from '../genesis.ts';
-import { createTableSqlBlocks } from '../schema/blocks.ts';
-import { coreSchema } from '../schema/mod.ts';
-import { createTableSqlTxs } from '../schema/txs.ts';
+import { createMockDb } from '../../../chain.test.ts';
+import { Chain } from '../../../chain.ts';
+import { ModuleRegistry } from '../../../module-registry.ts';
+import { CryptoModule } from '../../../modules/crypto/crypto.ts';
+import { insertGenesisBlock } from '../../genesis.ts';
+import { createTableSqlBlocks } from '../../schema/blocks.ts';
+import { coreSchema } from '../../schema/mod.ts';
+import { createTableSqlTxs } from '../../schema/txs.ts';
 import { signBlock } from './sign-block.ts';
 
 Deno.test(
@@ -33,14 +30,15 @@ Deno.test(
 		const publicKey = new PublicKeyEd25519(await privateKey.publicKey());
 
 		await chain.db.transaction(async (dbTx) => {
-			await insertGenesisBlock(chain, dbTx, Buffer.from('genesis'), [publicKey]);
+			await insertGenesisBlock(chain, dbTx, 'genesis', [publicKey]);
 		});
 
-		const blockBytes = await signBlock(
+		await signBlock(
 			chain,
 			(_signer, signBytes) => privateKey.sign(signBytes),
-			async (_) => {}
+			async (blockBinary) => {
+				console.log(blockBinary.toString());
+			}
 		);
-		console.log(blockBytes.toString());
 	}
 );

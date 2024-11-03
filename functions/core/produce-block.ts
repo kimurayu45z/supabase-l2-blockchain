@@ -7,7 +7,8 @@ import {
 	createBlock,
 	createBlockBody,
 	createBlockHeader,
-	getBlockSignBytes,
+	getBlockHash,
+	getBlockSignMessage,
 	TxSchema,
 	TxsSchema,
 	type Block,
@@ -24,8 +25,6 @@ import type { Chain } from '../chain.ts';
 import {
 	block_bodies,
 	block_headers,
-	blocks,
-	convertBlock,
 	convertBlockBody,
 	convertBlockHeader
 } from './schema/blocks.ts';
@@ -46,17 +45,21 @@ export async function produceBlock(
 	signHandler: (signer: PublicKey, signBytes: Uint8Array) => Promise<Uint8Array>
 ): Promise<Block> {
 	// Get last block info
-	const lastBlock = await chain.db.query.blocks.findFirst({
+	const lastBlockHeader = await chain.db.query.block_headers.findFirst({
 		where: (block, { eq }) => eq(block.chain_id, chain.id),
 		orderBy: (block, { desc }) => [desc(block.height)]
 	});
-	if (!lastBlock) {
+	if (!lastBlockHeader) {
 		throw Error("Last block doesn't exist");
 	}
 
 	// Get last block body
 	const lastBlockBody = await chain.db.query.block_bodies.findFirst({
-		where: (blockBody, { eq }) => eq(blockBody.block_hash, lastBlock.hash)
+		where: (blockBody, { eq, and }) =>
+			and(
+				eq(blockBody.chain_id, lastBlockHeader.chain_id),
+				eq(blockBody.height, lastBlockHeader.height)
+			)
 	});
 
 	if (!lastBlockBody) {
@@ -72,6 +75,7 @@ export async function produceBlock(
 	const txResponses: { [hash: string]: TxResponse } = {};
 
 	let block: Block;
+	const height = lastBlockHeader.height + 1;
 
 	await chain.db.transaction(async (dbTx) => {
 		for (const txWithHash of sortedTxsWithHash) {
@@ -90,7 +94,7 @@ export async function produceBlock(
 				await dbTx
 					.update(tableTxs)
 					.set({
-						height: lastBlock.height + 1,
+						height,
 						success: txResponse.success,
 						inspection_error: txResponse.inspection_error || null,
 						msg_responses: txResponse.msg_responses
@@ -122,29 +126,30 @@ export async function produceBlock(
 		// Create new block header object
 		const blockHeader = createBlockHeaderFromRawTxs(
 			chain.id,
-			lastBlock.height,
-			lastBlock.hash,
+			lastBlockHeader.height,
+			lastBlockHeader.hash,
 			// TODO: use txs instead of sortedTxsWithHash
 			sortedTxsWithHash.map((tx) => tx.tx)
 		);
-		const signBytes = getBlockSignBytes(blockHeader);
+		const signMessage = getBlockSignMessage(blockHeader);
 
 		// Create Signatures
 		const signatures = await Promise.all(
-			signers.map(async (signer) => await signHandler(signer, signBytes))
+			signers.map(async (signer) => await signHandler(signer, signMessage))
 		);
 
 		// Create new block body object
 		const blockBody = createBlockBody(txs, signers, signatures);
 
 		// Create block hash
-		const hash = crypto.createHash('sha256').update(signBytes).digest();
+		const hash = getBlockHash(blockHeader);
 
-		await dbTx.insert(block_headers).values(convertBlockHeader(blockHeader));
 		await dbTx
 			.insert(block_bodies)
-			.values(convertBlockBody(hash, blockBody, chain.moduleRegistry.protobufRegistry));
-		await dbTx.insert(blocks).values(convertBlock(hash, blockHeader));
+			.values(convertBlockBody(chain.id, height, blockBody, chain.moduleRegistry.protobufRegistry));
+		await dbTx
+			.insert(block_headers)
+			.values(convertBlockHeader(blockHeader, chain.moduleRegistry.protobufRegistry));
 
 		// Create new block object
 		block = createBlock(hash, blockHeader, blockBody);

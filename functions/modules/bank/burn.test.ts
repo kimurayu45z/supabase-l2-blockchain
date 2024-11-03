@@ -1,6 +1,5 @@
-import { create } from '@bufbuild/protobuf';
 import { assertEquals } from '@std/assert';
-import { AssetSchema } from '@supabase-l2-blockchain/types/core';
+import { createAsset } from '@supabase-l2-blockchain/types/core';
 
 import { createMockDb } from '../../chain.test.ts';
 import { burn } from './burn.ts';
@@ -27,7 +26,7 @@ Deno.test(
 		});
 
 		await db.transaction(async (dbTx) => {
-			await burn(dbTx, 'address', [create(AssetSchema, { id: 'asset_id', amount: '100' })]);
+			await burn(dbTx, 'address', [createAsset('asset_id', 100n)]);
 		});
 
 		const balance = await db.query.balances.findFirst({

@@ -1,5 +1,6 @@
+import { create, fromJson, toJson, type JsonValue, type Registry } from '@bufbuild/protobuf';
 import type { AnyPossibleConstructor, PublicKey, Tx } from '@supabase-l2-blockchain/types/core';
-import type { Account } from '@supabase-l2-blockchain/types/modules/auth';
+import { GenesisStateSchema } from '@supabase-l2-blockchain/types/modules/auth';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
@@ -40,27 +41,36 @@ export class AuthModule<Schema extends AuthSchema> implements Module<Schema> {
 
 	async importGenesis(
 		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
-		state: AuthState
+		state: JsonValue,
+		protobufRegistry: Registry
 	): Promise<void> {
-		for (const account of state.accounts) {
+		const genesis = fromJson(GenesisStateSchema, state, { registry: protobufRegistry });
+
+		for (const account of genesis.accounts) {
 			await dbTx.insert(authSchema.accounts).values({
 				address: account.address,
-				sequence: account.sequence.toString()
+				sequence: Number(account.sequence)
 			});
 		}
 	}
 
-	async exportGenesis(db: PostgresJsDatabase<Schema>): Promise<AuthState> {
+	async exportGenesis(
+		db: PostgresJsDatabase<Schema>,
+		protobufRegistry: Registry
+	): Promise<JsonValue> {
 		const accounts = await (
 			db as unknown as PostgresJsDatabase<AuthSchema>
 		).query.accounts.findMany();
 
-		return {
-			accounts: accounts as any
-		};
+		return toJson(
+			GenesisStateSchema,
+			create(GenesisStateSchema, {
+				accounts: accounts.map((account) => ({
+					address: account.address,
+					sequence: BigInt(account.sequence)
+				}))
+			}),
+			{ registry: protobufRegistry }
+		);
 	}
 }
-
-export type AuthState = {
-	accounts: Account[];
-};

@@ -1,5 +1,6 @@
+import { create, fromJson, toJson, type JsonValue, type Registry } from '@bufbuild/protobuf';
 import type { AnyPossibleConstructor, Tx } from '@supabase-l2-blockchain/types/core';
-import type { Balance } from '@supabase-l2-blockchain/types/modules/bank';
+import { GenesisStateSchema } from '@supabase-l2-blockchain/types/modules/bank';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core/session';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
@@ -29,28 +30,40 @@ export class BankModule<Schema extends BankSchema> implements Module<Schema> {
 
 	async importGenesis(
 		dbTx: PgTransaction<PgQueryResultHKT, Schema, ExtractTablesWithRelations<Schema>>,
-		state: BankState
+		state: JsonValue,
+		protobufRegistry: Registry
 	): Promise<void> {
-		for (const balance of state.balances) {
-			await dbTx.insert(bankSchema.balances).values({
-				address: balance.address,
-				asset_id: balance.asset_id,
-				amount: balance.amount.toString()
-			});
+		const genesis = fromJson(GenesisStateSchema, state, { registry: protobufRegistry });
+
+		for (const balance of genesis.balances) {
+			for (const asset of balance.assets) {
+				await dbTx.insert(bankSchema.balances).values({
+					address: balance.address,
+					asset_id: asset.id,
+					amount: asset.amount
+				});
+			}
 		}
 	}
 
-	async exportGenesis(db: PostgresJsDatabase<Schema>): Promise<BankState> {
+	async exportGenesis(
+		db: PostgresJsDatabase<Schema>,
+		protobufRegistry: Registry
+	): Promise<JsonValue> {
 		const balances = await (
 			db as unknown as PostgresJsDatabase<BankSchema>
 		).query.balances.findMany();
 
-		return {
-			balances: balances.map((balance) => ({ ...balance, amount: BigInt(balance.amount) }))
-		};
+		return toJson(
+			GenesisStateSchema,
+			create(GenesisStateSchema, {
+				balances: balances.map((balance) => ({
+					address: balance.address,
+					asset_id: balance.asset_id,
+					amount: balance.amount.toString()
+				}))
+			}),
+			{ registry: protobufRegistry }
+		);
 	}
 }
-
-export type BankState = {
-	balances: Balance[];
-};
