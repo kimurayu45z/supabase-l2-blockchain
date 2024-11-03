@@ -41,7 +41,7 @@ export function createTxBody(msgs: AnyPossible[], memo: string, timeoutTimestamp
 	});
 }
 
-export function getTxSignBytes(
+export function getTxSignMessage(
 	txBody: TxBody,
 	chainId: string,
 	sequence: bigint,

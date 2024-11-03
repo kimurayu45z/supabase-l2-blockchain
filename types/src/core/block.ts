@@ -31,7 +31,7 @@ export function createBlockHeader(
 	});
 }
 
-export function getBlockSignBytes(blockHeader: BlockHeader): Uint8Array {
+export function getBlockSignMessage(blockHeader: BlockHeader): Uint8Array {
 	return toBinary(BlockHeaderSchema, blockHeader);
 }
 

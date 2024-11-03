@@ -1,14 +1,14 @@
 import { createRegistry, toJsonString } from '@bufbuild/protobuf';
 
-import { createAuthInfo, createTx, createTxBody, getTxSignBytes } from './tx';
+import { createAuthInfo, createTx, createTxBody, getTxSignMessage } from './tx';
 import { TxBody, TxSchema } from './tx_pb';
 
-test('getTxSignBytes', () => {
+test('getTxSignMessage', () => {
 	const txBody: TxBody = createTxBody([], '', new Date());
 	const registry = createRegistry();
-	const signBytes = getTxSignBytes(txBody, 'chainId', BigInt(1), registry);
+	const signMessage = getTxSignMessage(txBody, 'chainId', BigInt(1), registry);
 
-	console.log(signBytes.toString());
+	console.log(signMessage.toString());
 });
 
 test('createTx', () => {

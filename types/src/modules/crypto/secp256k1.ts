@@ -2,7 +2,6 @@ import { create, DescMessage, fromBinary, toBinary } from '@bufbuild/protobuf';
 import { Any, AnySchema } from '@bufbuild/protobuf/wkt';
 import * as secp from '@noble/secp256k1';
 
-import { AnyPossibleConstructor } from '../../core/any-possible';
 import { PrivateKey, PrivateKeyConstructor } from '../../core/private-key';
 import { PublicKey, PublicKeyConstructor } from '../../core/public-key';
 import { PrivateKeySecp256k1Schema, PublicKeySecp256k1Schema } from './secp256k1_pb';

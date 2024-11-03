@@ -7,3 +7,4 @@ export * from './public-key';
 export * from './any-possible';
 export * from './block';
 export * from './asset';
+export * from './endpoints';
